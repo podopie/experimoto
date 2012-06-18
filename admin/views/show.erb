@@ -1,7 +1,13 @@
 <html>
 <head></head>
 <body>
-  <h1>List of Current experiments</h1>
+  <h1>Experiments</h1>
+  <button onclick="javascript:document.getElementById('new-experiment-options').style.display='block';">Create New Experiment</button>
+  <div id="new-experiment-options" style="display: none;">
+    <a href="./experiment_create_univariate">New Univariate Experiment</a><br />
+    <a href="./experiment_create_multivariate">New Multivariate Experiment</a><br />
+    <a href="#" onclick="document.getElementById('new-experiment-options').style.display='none';">cancel</a>
+  </div>
   <ol>
     <% for experiment in experiments.find_all { |e| !e.is_view? } %>
     <li class="experiment">
