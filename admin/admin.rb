@@ -1,11 +1,7 @@
-
 require 'rubygems'
-
 require 'thread'
-
 require 'rdbi'
 require 'rdbi-driver-sqlite3'
-
 require File.expand_path(File.join(File.dirname(__FILE__),'..','lib','experimoto'))
 
 $experimoto = Experimoto::Experimoto.new(:dbh => RDBI.connect(:SQLite3, :database => ":memory:"))
@@ -16,6 +12,17 @@ require 'sinatra'
 
 get '/' do
   erb :index
+end
+
+get '/new' do
+  erb :create
+end
+
+post '/new' do
+  name = params[:name]
+  type = params[:type]
+  $experimoto.add_new_experiment(:name => name, :type => type)
+  erb :show
 end
 
 get '/experiment_list' do
@@ -38,7 +45,4 @@ end
 
 get '/experiment/:id' do
   "Experiment #{params[:id]}!"
-end
-
-post '/new' do
 end
