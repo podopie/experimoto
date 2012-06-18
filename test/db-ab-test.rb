@@ -25,7 +25,7 @@ class TestDBABExperiment < Test::Unit::TestCase
     end
     assert_not_equal(counts.min, 0)
     assert_not_equal(counts.max, num_samples)
-    assert(num_samples/5 > counts.max - counts.min)
+    assert(num_samples/4.0 > counts.max - counts.min)
   end
   
   def test_weights
@@ -50,7 +50,7 @@ class TestDBABExperiment < Test::Unit::TestCase
     assert(num_samples/10.0 > (counts[1]/2.0 - counts[0]).abs)
     assert(counts[2] > counts[1])
     assert(num_samples/10.0 > (counts[1]/2.0 - counts[2]/3.0).abs)
-    assert(counts[1] > counts[0])
+    assert(counts[2] > counts[0])
     assert(num_samples/10.0 > (counts[2]/3.0 - counts[0]).abs)
   end
  
