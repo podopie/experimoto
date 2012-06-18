@@ -14,15 +14,12 @@ $experimoto.start_syncing_thread
 
 require 'sinatra'
 
-get '/hi' do
-  'Hello World!'
+get '/' do
+  erb :index
 end
 
 get '/experiment_list' do
-  ("<html><head></head><body>" +
-   $experimoto.experiments.keys.sort.join('<br />') +
-   "</body></html>"
-   )
+  erb :show
 end
 
 get '/experiment_create' do
@@ -32,3 +29,9 @@ get '/experiment_create' do
   $experimoto.add_new_experiment(params)
 end
 
+get '/experiment/:id' do
+  "Experiment #{params[:id]}!"
+end
+
+post '/new' do
+end
