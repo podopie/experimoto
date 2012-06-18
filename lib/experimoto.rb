@@ -36,11 +36,20 @@ module Experimoto
     end
     
     def start_syncing_thread(opts={})
-      stop_syncing_thread
-      @syncing_thread = SyncingThread.new(self, opts)
+      @mutex.synchronize do
+        stop_syncing_thread(:no_sync => true)
+        @syncing_thread = SyncingThread.new(self, opts)
+      end
     end
-    def stop_syncing_thread
-      @syncing_thread.stop if @syncing_thread
+    
+    def stop_syncing_thread(opts={})
+      if opts[:no_sync]
+        @syncing_thread.stop if @syncing_thread
+      else
+        @mutex.synchronize do
+          @syncing_thread.stop if @syncing_thread
+        end
+      end
     end
     
     def generate_tables
