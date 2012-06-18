@@ -138,8 +138,9 @@ module Experimoto
     
     def add_new_experiment(opts)
       if opts[:multivariate]
-        opts[:experiments] # a hash of names to arrays of group names
-        
+        if opts[:experiments].kind_of?(String)
+          opts[:experiments] = JSON.parse(URI.unescape(opts[:experiments]))
+        end # a hash of names to arrays of group names
         groups_list = opts[:experiments].keys.sort.map { |k| opts[:experiments][k] }
         opts[:groups] = groups_list[0].product(*groups_list.drop(1)).map do |l|
           JSON.unparse(l)

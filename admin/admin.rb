@@ -19,7 +19,14 @@ get '/' do
 end
 
 get '/experiment_list' do
-  erb :show
+  experiments = []
+  $experimoto.mutex.synchronize do
+    $experimoto._db_sync
+    $experimoto.experiments.keys.sort.each do |k|
+      experiments << $experimoto.experiments[k]
+    end
+  end
+  erb :show, :locals => {:experiments => experiments}
 end
 
 get '/experiment_create' do
