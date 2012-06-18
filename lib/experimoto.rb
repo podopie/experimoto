@@ -114,6 +114,20 @@ module Experimoto
       @synced = true
     end
     
+    def save_experiment(experiment_name)
+      experiment = nil
+      @mutex.synchronize { experiment = @experiments[experiment_name] }
+      return if experiment.nil?
+      
+      @dbh.prepare('update experiments set type = ?, name = ?, created_at = ?, modified_at = ?, data = ? where id = ?;') do |sth|
+        row0 = experiment.to_row
+        puts row0.inspect
+        sth.execute(row0.drop(1) + [row0[0]])
+      end
+      
+      db_sync
+    end
+    
     def add_new_experiment(opts)
       if opts[:multivariate]
         opts[:experiments] # a hash of names to arrays of group names
