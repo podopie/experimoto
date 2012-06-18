@@ -137,10 +137,15 @@ module Experimoto
     end
     
     def add_new_experiment(opts)
+      raise ArgumentError, 'option hash needs :type' unless opts[:type].kind_of?(String)
+      raise ArgumentError, 'option hash needs :type' unless opts[:name].kind_of?(String)
       if opts[:multivariate]
         if opts[:experiments].kind_of?(String)
           opts[:experiments] = JSON.parse(URI.unescape(opts[:experiments]))
         end # a hash of names to arrays of group names
+        unless opts[:experiments].kind_of?(Hash)
+          raise ArgumentError, 'option hash needs a hash called :experiments to go with :multivariate'
+        end
         groups_list = opts[:experiments].keys.sort.map { |k| opts[:experiments][k] }
         opts[:groups] = groups_list[0].product(*groups_list.drop(1)).map do |l|
           JSON.unparse(l)
