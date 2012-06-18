@@ -140,6 +140,7 @@ module Experimoto
       end
       
       db_sync
+      @mutex.synchronize { @experiments[experiment.name] }
     end
     
     def add_new_experiment(opts)
