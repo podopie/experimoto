@@ -23,7 +23,7 @@ module Experimoto
     
     attr_accessor :experiments, :hmac_key
     
-    attr_reader :mutex, :synced, :generated_tables, :dbh
+    attr_reader :mutex, :synced, :generated_tables, :dbh, :syncing_thread
     
     def initialize(opts={})
       @experiments = {} # mapping experiment id to experiment
@@ -37,7 +37,7 @@ module Experimoto
     
     def start_syncing_thread(opts={})
       stop_syncing_thread
-      @syncing_thread = SyncingThread.new(opts)
+      @syncing_thread = SyncingThread.new(self, opts)
     end
     def stop_syncing_thread
       @syncing_thread.stop if @syncing_thread
@@ -121,7 +121,6 @@ module Experimoto
       
       @dbh.prepare('update experiments set type = ?, name = ?, created_at = ?, modified_at = ?, data = ? where id = ?;') do |sth|
         row0 = experiment.to_row
-        puts row0.inspect
         sth.execute(row0.drop(1) + [row0[0]])
       end
       

@@ -26,7 +26,6 @@ module Experimoto
     def _internal_sample
       if @group_split_weights
         total_weight = @groups.keys.map { |k| @group_split_weights[k] }.inject(0) {|a,b| a+b}
-        #puts total_weight
         current_weight = rand() * total_weight
         @groups.keys.each do |group_name|
           if current_weight < @group_split_weights[group_name]
