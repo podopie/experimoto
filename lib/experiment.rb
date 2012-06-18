@@ -62,18 +62,13 @@ module Experimoto
     
     def to_row
       # TODO: need to figure out if the dates are datetimes :/
-      preprocess_export
       [@id, @type, @name, @created_at, @modified_at, JSON.unparse(@data)]
     end
     
     def to_hash
-      preprocess_export
       { :id => @id, :type => @type, :name => @name,
         :created_at => @created_at, :modified_at => @modified_at,
         :data => @data }
-    end
-    
-    def preprocess_export
     end
     
   end

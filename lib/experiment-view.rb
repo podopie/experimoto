@@ -5,13 +5,24 @@ module Experimoto
   
   class ExperimentView < Experiment
     
-    attr_accessor :target_experiment_name, :json_lookup_index
-    
     def initialize(opts={})
       super(opts)
       @type = 'ExperimentView'
-      @target_experiment_name = opts[:target_experiment_name] || @data['target_experiment_name']
-      @json_lookup_index = opts[:json_lookup_index] || @data['json_lookup_index']
+      self.target_experiment_name = opts[:target_experiment_name] if opts[:target_experiment_name]
+      self.json_lookup_index = opts[:json_lookup_index] if opts[:json_lookup_index]
+    end
+    
+    def target_experiment_name
+      @data['target_experiment_name']
+    end
+    def target_experiment_name=x
+      @data['target_experiment_name'] = x
+    end
+    def json_lookup_index
+      @data['json_lookup_index']
+    end
+    def json_lookup_index=x
+      @data['json_lookup_index'] = x
     end
     
     def store_in_cookie?
@@ -32,12 +43,6 @@ module Experimoto
     
     def local_event(opts={})
       raise NotImplementedError
-    end
-    
-    def preprocess_export
-      @data['target_experiment_name'] = @target_experiment_name
-      @data['json_lookup_index'] = @json_lookup_index
-      super
     end
     
   end

@@ -14,14 +14,14 @@ module Experimoto
     
     # following http://www.chrisstucchio.com/blog/2012/bandit_algorithms_vs_ab.html
     def _internal_sample
-      untried = @groups.keys.find_all { |name| @plays[name] == 0 }
+      untried = self.groups.keys.find_all { |name| @plays[name] == 0 }
       if untried.size > 0
         return untried[rand(untried.size)]
       end
       
       total_plays = @plays.values.inject(0) { |a, b| a + b }
       
-      result = @groups.keys.map do |name|
+      result = self.groups.keys.map do |name|
         avg = utility(name)
         confidence_bound = Math.sqrt(2.0 * Math.log(total_plays) / @plays[name])
         best = avg + confidence_bound

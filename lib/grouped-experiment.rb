@@ -10,7 +10,7 @@ module Experimoto
   
   class GroupedExperiment < Experiment
     
-    attr_accessor :groups, :plays, :group_split_weights
+    attr_accessor :plays
     
     def initialize(opts={})
       super(opts)
@@ -25,18 +25,27 @@ module Experimoto
         initialize_grouped_experiment_from_args(opts)
       end
       
-      @group_split_weights = {}
-      @group_split_weights.default = 1.0
-      if @data['group_split_weights']
-        @group_split_weights.merge!(@data['group_split_weights'])
-      end
-      if opts[:group_split_weights]
-        @group_split_weights.merge!(opts[:group_split_weights])
-      end
+      self.group_split_weights ||= {}
+      self.group_split_weights.default = 1.0
+      self.group_split_weights.merge!(opts[:group_split_weights]) if opts[:group_split_weights]
+    end
+    
+    def group_split_weights
+      @data['group_split_weights']
+    end
+    def group_split_weights=x
+      @data['group_split_weights'] = x
+    end
+    
+    def groups
+      @data['groups']
+    end
+    def groups=x
+      @data['groups'] = x
     end
     
     def add_group(opts)
-      @groups[opts[:name]] = ExperimentGroup.new(opts)
+      self.groups[opts[:name]] = ExperimentGroup.new(opts)
       init_event_total_for_group(opts[:name])
     end
     
@@ -47,7 +56,7 @@ module Experimoto
     
     def init_event_totals
       @event_totals = {}
-      @groups.keys.each do |group_name|
+      self.groups.keys.each do |group_name|
         init_event_total_for_group(group_name)
       end
     end
@@ -96,17 +105,12 @@ module Experimoto
             ExperimentGroup.new(:name => g)
           end
         end
-        @groups = Hash[arr.map { |g| [g.name, g] }]
+        self.groups = Hash[arr.map { |g| [g.name, g] }]
       elsif opts.include?(:groups) && opts[:groups].kind_of?(Hash)
-        @groups = opts[:groups]
+        self.groups = opts[:groups]
       elsif @data.include?('groups')
-        json_friendly_groups = @data['groups']
-        @groups = {}
-        json_friendly_groups.each do |k,v|
-          @groups[k] = ExperimentGroup.new(v)
-        end
       else
-        @groups = {'default' => ExperimentGroup.new(:name => 'default')}
+        self.groups = {'default' => ExperimentGroup.new(:name => 'default')}
       end
       
       init_event_totals
@@ -118,12 +122,6 @@ module Experimoto
     
     def initialize_grouped_experiment_from_db(opts)
       raise 'hell' unless opts[:dbh]
-      
-      json_friendly_groups = @data['groups']
-      @groups = {}
-      json_friendly_groups.each do |k,v|
-        @groups[k] = ExperimentGroup.new(v)
-      end
       
       init_event_totals
       
@@ -138,7 +136,7 @@ module Experimoto
     
     def sync_play_data(dbh)
       dbh.prepare('select eid, group_name, count(*) from groupings where eid = ? and group_name = ?;') do |sth|
-        @groups.keys.each do |name|
+        self.groups.keys.each do |name|
           sth.execute(@id, name).each do |row|
             next if row.nil?
             @plays[name] = row[2]
@@ -150,7 +148,7 @@ module Experimoto
     
     def sync_event_data(dbh, event_name)
       dbh.prepare('select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?;') do |sth|
-        @groups.keys.each do |group_name|
+        self.groups.keys.each do |group_name|
           sth.execute(@id, group_name, event_name).each do |row|
             next if row.nil?
             val = row[2].nil? ? 0 : row[2]
@@ -172,16 +170,6 @@ module Experimoto
     
     def _internal_sample
       'default'
-    end
-    
-    def preprocess_export
-      json_friendly_groups = {}
-      groups.each do |k,v|
-        json_friendly_groups["#{k}"] = v.json_friendly
-      end
-      @data['groups'] = json_friendly_groups
-      @data['group_split_weights'] = @group_split_weights
-      super
     end
     
   end

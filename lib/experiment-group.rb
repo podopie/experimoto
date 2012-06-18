@@ -19,8 +19,19 @@ module Experimoto
       @name = opts[:name]
     end
     
-    def json_friendly
-      {'name' => @name}
+    def to_json(*a)
+      {
+        'json_class'   => self.class.name,
+        'name'         => @name
+      }.to_json(*a)
+    end
+    
+    def self.json_create(o)
+      new(o)
+    end
+    
+    def ==x
+      @name == x.name
     end
     
   end
