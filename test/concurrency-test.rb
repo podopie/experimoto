@@ -15,7 +15,7 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     assert(e2.experiments.include?('test-experiment'))
     
     e2.experiments['test-experiment'].add_group(:name => 'another_group')
-    e2.save_experiment('test-experiment')
+    e2.save_experiment(:name => 'test-experiment')
     e1.db_sync
     assert(e1.experiments['test-experiment'].groups.include?('another_group'))
     
@@ -25,7 +25,7 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     assert(e1.syncing_thread.thread.alive?)
       
     e2.experiments['test-experiment'].add_group(:name => 'yet_another_group')
-    e2.save_experiment('test-experiment')
+    e2.save_experiment(:name => 'test-experiment')
     runs0 = e1.syncing_thread.runs
     waits = 0
     until e1.syncing_thread.runs > runs0 || waits > 100

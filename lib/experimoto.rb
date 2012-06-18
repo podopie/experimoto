@@ -123,10 +123,16 @@ module Experimoto
       @synced = true
     end
     
-    def save_experiment(experiment_name)
-      experiment = nil
-      @mutex.synchronize { experiment = @experiments[experiment_name] }
-      return if experiment.nil?
+    def save_experiment(opts)
+      if opts[:name].kind_of?(String)
+        experiment = nil
+        @mutex.synchronize { experiment = @experiments[opts[:name]] }
+        return if experiment.nil?
+      elsif opts[:experiment].kind_of(Experiment)
+        experiment = opts[:experiment]
+      else
+        raise ArgumentError
+      end
       
       @dbh.prepare('update experiments set type = ?, name = ?, created_at = ?, modified_at = ?, data = ? where id = ?;') do |sth|
         row0 = experiment.to_row
@@ -174,6 +180,13 @@ module Experimoto
       d_exp = @experiments[exp.name]
       # TODO: somehow assert that  exp.to_row == d_exp.to_row (just for safety purposes)
       d_exp
+    end
+    
+    def replace_experiment(opts)
+      raise ArgumentError, 'option hash needs :type' unless opts[:type].kind_of?(String)
+      raise ArgumentError, 'option hash needs :type' unless opts[:name].kind_of?(String)
+      exp = experiment_type_to_class(opts[:type]).new(opts)
+      save_experiment(:experiment => exp)
     end
     
     def user_experiment(user, experiment_name, opts = {})
