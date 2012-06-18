@@ -15,7 +15,7 @@ class TestCookies < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    u1 = e.new_user
+    u1 = Experimoto::User.new
     c = e.user_to_cookie(u1)
     c['experimoto_mac'][-1] = '='
     u2 = e.user_from_cookie(c)
@@ -26,7 +26,7 @@ class TestCookies < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    u1 = e.new_user
+    u1 = Experimoto::User.new
     c = e.user_to_cookie(u1)
     u2 = e.user_from_cookie(c)
     assert_equal(u1.id, u2.id)
@@ -37,7 +37,7 @@ class TestCookies < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    u1 = e.new_user(:groups => {'test1' => 'asdf'})
+    u1 = Experimoto::User.new(:groups => {'test1' => 'asdf'})
     e.experiments['test1'] = Experimoto::Experiment.new(:name => 'blah')
     c = e.user_to_cookie(u1)
     u2 = e.user_from_cookie(c)
@@ -51,7 +51,7 @@ class TestCookies < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    u1 = e.new_user(:groups => {'test1' => 'asdf'})
+    u1 = Experimoto::User.new(:groups => {'test1' => 'asdf'})
     c = e.user_to_cookie(u1)
     u2 = e.user_from_cookie(c)
     assert_equal(u1.id, u2.id)
@@ -68,6 +68,7 @@ class TestCookies < Test::Unit::TestCase
     e.db_sync
     x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
     u1 = e.new_user_into_db(:is_tester => true)
+    assert(u1.tester?)
     c = e.user_to_cookie(u1)
     u2 = e.user_from_cookie(c)
     assert(u2.tester?)

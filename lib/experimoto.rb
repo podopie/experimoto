@@ -168,15 +168,18 @@ module Experimoto
       d_exp
     end
     
-    def user_experiment(user, experiment_name)
-      experiment = nil
-      @mutex.synchronize do 
-        experiment = @experiments[experiment_name]
-        raise "no such experiment, `#{experiment_name}`!" if experiment.nil?
+    def user_experiment(user, experiment_name, opts = {})
+      @mutex.synchronize do
+        _user_experiment(user, experiment_name, opts)
       end
+    end
+    
+    def _user_experiment(user, experiment_name, opts = {})
+      experiment = @experiments[experiment_name]
+      return opts[:default] if experiment.nil?
       
       if experiment.is_view?
-        group_name = user_experiment(user, experiment.target_experiment_name)
+        group_name = _user_experiment(user, experiment.target_experiment_name, opts)
         if experiment.json_lookup_index
           group_name = JSON.parse(group_name)[experiment.json_lookup_index]
         end
@@ -188,12 +191,7 @@ module Experimoto
         return user.groups[experiment_name]
       end
       
-      @mutex.synchronize do
-        experiment = @experiments[experiment_name]
-        raise "no such experiment, `#{experiment_name}`!" if experiment.nil?
-        group_name = experiment.sample(:no_record => user.tester?)
-      end
-      
+      group_name = experiment.sample(:no_record => user.tester?)
       user.groups[experiment_name] = group_name
       unless user.tester?
         @dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
@@ -205,17 +203,21 @@ module Experimoto
     end
     
     def user_experiment_event(user, experiment_name, key, value=1)
-      experiment = nil
-      @mutex.synchronize { experiment = @experiments[experiment_name] }
+      @mutex.synchronize do
+        _user_experiment_event(user, experiment_name, key, value)
+      end
+    end
+    def _user_experiment_event(user, experiment_name, key, value=1)
+      experiment = @experiments[experiment_name]
       return if experiment.nil?
       if experiment.is_view?
         # giant warning: if multiple views point to the same
         # experiment, calling user_experiment_event on it will cause
         # duplicates.
-        return user_experiment_event(user, experiment.target_experiment_name, key, value)
+        return _user_experiment_event(user, experiment.target_experiment_name, key, value)
       end
       
-      group_name = user_experiment(user, experiment_name)
+      group_name = _user_experiment(user, experiment_name)
       unless user.tester?
         @dbh.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, key, value,
@@ -228,17 +230,18 @@ module Experimoto
     
     # trying to emulate vanity's track! function
     def track(user, key, value=1)
-      user.groups.keys.each do |experiment_name|
-        experiment = nil
-        @mutex.synchronize { experiment = @experiments[experiment_name] }
-        next if experiment.nil?
-        next unless experiment.track?
-        user_experiment_event(user, experiment_name, key, value)
+      @mutex.synchronize do
+        user.groups.keys.each do |experiment_name|
+          experiment = @experiments[experiment_name]
+          next if experiment.nil?
+          next unless experiment.track?
+          _user_experiment_event(user, experiment_name, key, value)
+        end
       end
     end
     
     def new_user_into_db(opts={})
-      u = new_user(opts)
+      u = User.new(opts)
       write_user_to_db(u)
       u
     end
@@ -247,10 +250,6 @@ module Experimoto
       @dbh.prepare('insert into users values (?,?,?)') do |sth|
         sth.execute(*user.to_row)
       end
-    end
-    
-    def new_user(opts={})
-      User.new(opts.merge(:experimoto => self))
     end
     
     def user_from_cookie(cookie_hash = {}, user = nil)
