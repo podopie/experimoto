@@ -3,7 +3,7 @@
 
 require 'date'
 require 'openssl'
-
+require 'thread'
 
 require 'rubygems'
 require 'json'
@@ -11,6 +11,7 @@ require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'ucb1-experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'ab-experiment'))
+require File.expand_path(File.join(File.dirname(__FILE__),'syncing-thread'))
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment-view'))
 require File.expand_path(File.join(File.dirname(__FILE__),'user'))
 require File.expand_path(File.join(File.dirname(__FILE__),'utils'))
@@ -22,12 +23,24 @@ module Experimoto
     
     attr_accessor :experiments, :hmac_key
     
+    attr_reader :mutex, :synced, :generated_tables, :dbh
+    
     def initialize(opts={})
       @experiments = {} # mapping experiment id to experiment
       @hmac_key = '' # TODO: configuration
       @dbh = opts[:dbh]
       @generated_tables = false
       @synced = false
+      @mutex = Mutex.new
+      @syncing_thread = nil
+    end
+    
+    def start_syncing_thread(opts={})
+      stop_syncing_thread
+      @syncing_thread = SyncingThread.new(opts)
+    end
+    def stop_syncing_thread
+      @syncing_thread.stop if @syncing_thread
     end
     
     def generate_tables
@@ -77,6 +90,9 @@ module Experimoto
     end
     
     def db_sync
+      @mutex.synchronize { _db_sync }
+    end
+    def _db_sync
       generate_tables unless @generated_tables
       
       #acquire experiments
@@ -131,8 +147,11 @@ module Experimoto
     end
     
     def user_experiment(user, experiment_name)
-      experiment = @experiments[experiment_name]
-      raise "no such experiment, `#{experiment_name}`!" if experiment.nil?
+      experiment = nil
+      @mutex.synchronize do 
+        experiment = @experiments[experiment_name]
+        raise "no such experiment, `#{experiment_name}`!" if experiment.nil?
+      end
       
       if experiment.is_view?
         group_name = user_experiment(user, experiment.target_experiment_name)
@@ -147,19 +166,26 @@ module Experimoto
         return user.groups[experiment_name]
       end
       
-      group_name = experiment.sample(:no_record => user.tester?)
+      @mutex.synchronize do
+        experiment = @experiments[experiment_name]
+        raise "no such experiment, `#{experiment_name}`!" if experiment.nil?
+        group_name = experiment.sample(:no_record => user.tester?)
+      end
+      
       user.groups[experiment_name] = group_name
       unless user.tester?
         @dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, DateTime.now, DateTime.now)
         end
       end
-
+      
       group_name
     end
     
     def user_experiment_event(user, experiment_name, key, value=1)
-      experiment = @experiments[experiment_name] # TODO: what if no experiment exists?
+      experiment = nil
+      @mutex.synchronize { experiment = @experiments[experiment_name] }
+      return if experiment.nil?
       if experiment.is_view?
         # giant warning: if multiple views point to the same
         # experiment, calling user_experiment_event on it will cause
@@ -181,7 +207,9 @@ module Experimoto
     # trying to emulate vanity's track! function
     def track(user, key, value=1)
       user.groups.keys.each do |experiment_name|
-        experiment = @experiments[experiment_name]
+        experiment = nil
+        @mutex.synchronize { experiment = @experiments[experiment_name] }
+        next if experiment.nil?
         next unless experiment.track?
         user_experiment_event(user, experiment_name, key, value)
       end
@@ -214,9 +242,11 @@ module Experimoto
           user = User.new(:cookie_hash => cookie_hash, :hmac_key => @hmac_key)
           
           # clean out deprecated experiments and experiment-views
-          user.groups.keys.each do |name|
-            unless @experiments.include?(name) && @experiments[name].store_in_cookie?
-              user.groups.delete(name)
+          @mutex.synchronize do
+            user.groups.keys.each do |name|
+              unless @experiments.include?(name) && @experiments[name].store_in_cookie?
+                user.groups.delete(name)
+              end
             end
           end
         rescue
