@@ -4,8 +4,8 @@
   <h1>Experiments</h1>
   <button onclick="javascript:document.getElementById('new-experiment-options').style.display='block';">Create New Experiment</button>
   <div id="new-experiment-options" style="display: none;">
-    <a href="./experiment_create_univariate">New Univariate Experiment</a><br />
-    <a href="./experiment_create_multivariate">New Multivariate Experiment</a><br />
+    <a href="./new/univariate">New Univariate Experiment</a><br />
+    <a href="./new/multivariate">New Multivariate Experiment</a><br />
     <a href="#" onclick="document.getElementById('new-experiment-options').style.display='none';">cancel</a>
   </div>
   <ol>
@@ -13,9 +13,9 @@
     <li class="experiment">
       <%= experiment.name %> <br />
       <%= experiment.type %> <br />
-      <form method="post" action="./experiment_edit">
-	<input type="hidden" name="name" value="<%= experiment.name %>">
-	<input type="submit" value="Edit" />
+      <form method="get" action="/experiment/<%= experiment.id %>/edit">
+  <input type="hidden" name="name" value="<%= experiment.name %>">
+  <input type="submit" value="Edit" />
       </form>
     </li>
     <% end %>
@@ -27,8 +27,8 @@
       <%= view.name %> <br />
       View into <%= "#{view.target_experiment_name}#{view.json_lookup_index ? '['+view.json_lookup_index.to_s+']' : ''}" %> <br />
       <form method="post" action="./view_edit">
-	<input type="hidden" name="name" value="<%= view.name %>">
-	<input type="submit" value="Edit" />
+  <input type="hidden" name="name" value="<%= view.name %>">
+  <input type="submit" value="Edit" />
       </form>
     </li>
     <% end %>

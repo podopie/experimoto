@@ -2,18 +2,20 @@
 <head>
 </head>
 <body>
+<h1>New Univariate Test</h1>
 <form method="post">
   <ul>
   <li>
-    <label for"name">Experiment Name:</label>
-    <input type="text" name="name" />
+    <label for="name">Experiment Name:</label>
+    <input type="text" id="name" name="name" />
   </li>
   <li>
-    <label for="type">Experiment Type:
-      <input type="radio" name="type" value="ABExperiment" />A/B Test
+    Experiment Type:
+    <label for="type1">
+      <input type="radio" name="type" id="type1" value="ABExperiment" />A/B Test
     </label>
-    <label>
-      <input type="radio" name="type" value="UCB1Experiment" />UCB Experiment
+    <label for="type2">
+      <input type="radio" name="type" id="type2" value="UCB1Experiment" />UCB Experiment
     </label>
   </li>
   <button type="submit" value="send">Submit!</button>

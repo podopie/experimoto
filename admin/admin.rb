@@ -14,11 +14,11 @@ get '/' do
   erb :index
 end
 
-get '/new' do
+get '/new/univariate' do
   erb :create
 end
 
-post '/new' do
+post '/new/univariate' do
   name = params[:name]
   type = params[:type]
   $experimoto.add_new_experiment(:name => name, :type => type)
@@ -43,6 +43,6 @@ get '/experiment_create' do
   $experimoto.add_new_experiment(params)
 end
 
-get '/experiment/:id' do
-  "Experiment #{params[:id]}!"
+get '/experiment/:id/edit' do
+  erb :edit
 end
