@@ -50,13 +50,21 @@ module Experimoto
     def utility_function_string=(x)
       @data['utility_function'] = x
     end
-    def utility_function_variables
-      utility_function_string.scan(/[A-z_][0-9A-z_]*/).uniq.sort
+    def utility_function_variables(s=nil)
+      s ||= utility_function_string
+      s.scan(/[A-z_][0-9A-z_]*/).uniq.sort
     end
     
-    def utility(group_name)
-      expr = utility_function_string
-      utility_function_variables.each do |k|
+    def utility(group_name, given_utility_function = nil, dbh = nil)
+      expr = given_utility_function || utility_function_string
+      if given_utility_function
+        raise 'hell' if dbh.nil?
+        sync_play_data(dbh)
+        utility_function_variables(expr).each do |k|
+          sync_event_data(dbh, k)
+        end
+      end
+      utility_function_variables(expr).each do |k|
         if 0 == @plays[group_name]
           avg = 0
         else
@@ -105,6 +113,14 @@ module Experimoto
       
       dbh = opts[:dbh]
       # plays
+      sync_play_data(dbh)
+      # utility information
+      utility_function_variables.each do |event_name|
+        sync_event_data(dbh, event_name)
+      end
+    end
+    
+    def sync_play_data(dbh)
       dbh.prepare('select eid, group_name, count(*) from groupings where eid = ? and group_name = ?;') do |sth|
         @groups.keys.each do |name|
           sth.execute(@id, name).each do |row|
@@ -114,16 +130,16 @@ module Experimoto
           end
         end
       end
-      # utility information
+    end
+    
+    def sync_event_data(dbh, event_name)
       dbh.prepare('select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?;') do |sth|
         @groups.keys.each do |group_name|
-          utility_function_variables.each do |event_name|
-            sth.execute(@id, group_name, event_name).each do |row|
-              next if row.nil?
-              val = row[2].nil? ? 0 : row[2]
-              @event_totals[group_name][event_name] = val.to_i
-              break
-            end
+          sth.execute(@id, group_name, event_name).each do |row|
+            next if row.nil?
+            val = row[2].nil? ? 0 : row[2]
+            @event_totals[group_name][event_name] = val.to_i
+            break
           end
         end
       end

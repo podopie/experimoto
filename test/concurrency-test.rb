@@ -39,6 +39,11 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     sleep 0.2
     assert(!e1.syncing_thread.thread.alive?)
     assert(!e2.syncing_thread.thread.alive?)
+    
+    u = e1.new_user_into_db
+    g = e1.user_experiment(u, 'test-experiment')
+    e1.track(u, 'asdf')
+    assert_equal(2.0, e2.experiments['test-experiment'].utility(g, 'asdf*2', dbh))
   end
   
 end
