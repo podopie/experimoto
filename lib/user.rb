@@ -1,5 +1,5 @@
 
-
+require 'date'
 require 'openssl'
 require 'uri'
 
@@ -17,13 +17,12 @@ module Experimoto
     
     def initialize(opts={})
       if opts[:cookie_hash]
-        import_from_cookie(opts[:cookie_hash], opts[:hmac_key])
+        import_from_cookie(opts[:cookie_hash], opts[:hmac_key], opts[:ignore_hmac])
       else
         @id = opts[:id] || Utils.new_id
         @groups = opts[:groups] || {} # mapping of experiment name to group name
-        @created_at = opts[:created_at]
-        @modified_at = opts[:modified_at]
-        @experimoto = opts[:experimoto]
+        @created_at = opts[:created_at] || DateTime.new
+        @modified_at = opts[:modified_at] || DateTime.new
         @is_tester = true == opts[:is_tester]
       end
     end
@@ -50,11 +49,13 @@ module Experimoto
         'experimoto_mac' => URI.escape(mac)}
     end
     
-    def import_from_cookie(cookie_hash, hmac_key)
+    def import_from_cookie(cookie_hash, hmac_key, ignore_hmac = false)
       data = URI.unescape(cookie_hash['experimoto_data'])
-      mac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha1'),
-                                    hmac_key, data)
-      raise 'hell' if mac != URI.unescape(cookie_hash['experimoto_mac'])
+      unless ignore_hmac
+        mac = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha1'),
+                                      hmac_key, data)
+        raise 'hell' if mac != URI.unescape(cookie_hash['experimoto_mac'])
+      end
       from_json(JSON.parse(data))
     end
     

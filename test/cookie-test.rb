@@ -1,14 +1,5 @@
 
-require 'test/unit'
 require File.expand_path(File.join(File.dirname(__FILE__),'..','test','test_helper.rb'))
-
-require 'rubygems'
-
-require 'thread'
-require 'rdbi'
-require 'rdbi-driver-sqlite3'
-
-require File.expand_path(File.join(File.dirname(__FILE__),'..','lib','experimoto'))
 
 class TestCookies < Test::Unit::TestCase
   
