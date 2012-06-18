@@ -22,7 +22,7 @@ post '/new' do
   name = params[:name]
   type = params[:type]
   $experimoto.add_new_experiment(:name => name, :type => type)
-  erb :show
+  redirect '/experiment_list'
 end
 
 get '/experiment_list' do
