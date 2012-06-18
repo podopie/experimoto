@@ -30,7 +30,15 @@ module Experimoto
         @created_at = opts[:created_at]
         @modified_at = opts[:modified_at]
         @data = opts[:data] || {}
+        @data['description'] = opts[:description] if opts[:description]
       end
+    end
+    
+    def description
+      @data['description'] || ''
+    end
+    def description=x
+      @data['description'] = x
     end
     
     def store_in_cookie?

@@ -8,6 +8,17 @@ class TestABExperiment < Test::Unit::TestCase
     assert_equal(x.sample, 'default')
   end
   
+  def test_ab_description
+    x = Experimoto::ABExperiment.new(:name => 'test', :description => 'asdf')
+    assert_equal('asdf', x.description)
+    x.description = '5'
+    assert_equal('5', x.description)
+    x = Experimoto::ABExperiment.new(:name => 'test')
+    assert_equal('', x.description)
+    x.description = 'blah'
+    assert_equal('blah', x.description)
+  end
+  
   def test_ab_triple_sample
     x = Experimoto::ABExperiment.new(:name => 'test', :groups => ['0','1','2'])
     counts = [0,0,0]

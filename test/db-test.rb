@@ -44,6 +44,19 @@ class TestDB < Test::Unit::TestCase
     assert_equal([1], db_row)
   end
   
+  def test_replace_experiment_description
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment',
+                              :description => 'foo')
+    assert_equal('foo', x1.description)
+    x2 = e.replace_experiment(x1.to_hash.merge(:description => 'bar'))
+    assert_equal('bar', x2.description)
+    assert_equal(x1.data, x2.data)
+    assert_equal(x1.name, x2.name)
+  end
+  
   def test_replace_experiment_ab_ucb1
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
