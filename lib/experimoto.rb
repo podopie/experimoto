@@ -128,7 +128,7 @@ module Experimoto
         experiment = nil
         @mutex.synchronize { experiment = @experiments[opts[:name]] }
         return if experiment.nil?
-      elsif opts[:experiment].kind_of(Experiment)
+      elsif opts[:experiment].kind_of?(Experiment)
         experiment = opts[:experiment]
       else
         raise ArgumentError

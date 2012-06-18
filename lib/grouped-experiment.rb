@@ -99,13 +99,21 @@ module Experimoto
         @groups = Hash[arr.map { |g| [g.name, g] }]
       elsif opts.include?(:groups) && opts[:groups].kind_of?(Hash)
         @groups = opts[:groups]
+      elsif @data.include?('groups')
+        json_friendly_groups = @data['groups']
+        @groups = {}
+        json_friendly_groups.each do |k,v|
+          @groups[k] = ExperimentGroup.new(v)
+        end
       else
         @groups = {'default' => ExperimentGroup.new(:name => 'default')}
       end
       
       init_event_totals
       
-      @data['utility_function'] = opts[:utility_function]
+      if opts[:utility_function]
+        @data['utility_function'] = opts[:utility_function]
+      end
     end
     
     def initialize_grouped_experiment_from_db(opts)
@@ -166,7 +174,7 @@ module Experimoto
       'default'
     end
     
-    def to_row
+    def preprocess_export
       json_friendly_groups = {}
       groups.each do |k,v|
         json_friendly_groups["#{k}"] = v.json_friendly

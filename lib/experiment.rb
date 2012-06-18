@@ -23,7 +23,7 @@ module Experimoto
         @data = JSON.parse(json_data)
         # TODO: need to figure out if the dates are datetimes :/
       else
-        raise 'Experiment needs a name!' unless opts.include?(:name)
+        raise ArgumentError, 'Experiment needs a name!' unless opts[:name].kind_of?(String)
         @id = opts[:id] || Utils.new_id
         @type = 'Experiment'
         @name = opts[:name]
@@ -54,7 +54,18 @@ module Experimoto
     
     def to_row
       # TODO: need to figure out if the dates are datetimes :/
+      preprocess_export
       [@id, @type, @name, @created_at, @modified_at, JSON.unparse(@data)]
+    end
+    
+    def to_hash
+      preprocess_export
+      { :id => @id, :type => @type, :name => @name,
+        :created_at => @created_at, :modified_at => @modified_at,
+        :data => @data }
+    end
+    
+    def preprocess_export
     end
     
   end

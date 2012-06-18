@@ -44,6 +44,15 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     g = e1.user_experiment(u, 'test-experiment')
     e1.track(u, 'asdf')
     assert_equal(2.0, e2.experiments['test-experiment'].utility(g, 'asdf*2', dbh))
+    
+    x = e1.experiments['test-experiment']
+    e1.replace_experiment(x.to_hash.merge(:type => 'UCB1Experiment'))
+    e1.db_sync
+    assert_equal('UCB1Experiment', e1.experiments['test-experiment'].type)
+    assert_equal(2.0, e1.experiments['test-experiment'].utility(g, 'asdf*2', dbh))
+    e2.db_sync
+    assert_equal('UCB1Experiment', e2.experiments['test-experiment'].type)
+    assert_equal(2.0, e2.experiments['test-experiment'].utility(g, 'asdf*2', dbh))
   end
   
 end

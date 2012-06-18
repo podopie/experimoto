@@ -34,7 +34,7 @@ module Experimoto
       raise NotImplementedError
     end
     
-    def to_row
+    def preprocess_export
       @data['target_experiment_name'] = @target_experiment_name
       @data['json_lookup_index'] = @json_lookup_index
       super
