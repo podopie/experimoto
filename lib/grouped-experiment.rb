@@ -10,7 +10,7 @@ module Experimoto
   
   class GroupedExperiment < Experiment
     
-    attr_accessor :groups, :plays
+    attr_accessor :groups, :plays, :group_split_weights
     
     def initialize(opts={})
       super(opts)
@@ -23,8 +23,16 @@ module Experimoto
         initialize_grouped_experiment_from_db(opts)
       else
         initialize_grouped_experiment_from_args(opts)
-      end 
+      end
       
+      @group_split_weights = {}
+      @group_split_weights.default = 1.0
+      if @data['group_split_weights']
+        @group_split_weights.merge!(@data['group_split_weights'])
+      end
+      if opts[:group_split_weights]
+        @group_split_weights.merge!(opts[:group_split_weights])
+      end
     end
     
     def add_group(opts)
@@ -164,6 +172,7 @@ module Experimoto
         json_friendly_groups["#{k}"] = v.json_friendly
       end
       @data['groups'] = json_friendly_groups
+      @data['group_split_weights'] = @group_split_weights
       super
     end
     
