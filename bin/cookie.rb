@@ -15,7 +15,7 @@ def reshape_cookies(opts={})
     cookie_hash = {'experimoto_data' => data_cookie}
     user = Experimoto::User.new(:cookie_hash => cookie_hash, :hmac_key => hmac_key, :ignore_hmac => true)
   else
-    user = Experimoto::User.new
+    user = Experimoto::User.new()
   end
   if opts[:id_string]
     user.id = URI.escape(opts[:id_string])
@@ -25,13 +25,14 @@ def reshape_cookies(opts={})
       user.groups[experiment_name] = group_name
     end
   end
+  user.is_tester = opts[:is_tester]
   cookie_hash = user.to_cookie(hmac_key)
   ";;;;;;;;;; " + cookie_hash.map { |k,v| "document.cookie = '#{k}=#{v}'" }.join('; ') + " ;;;;;;;;;;"
 end
 
 
 if __FILE__ == $0
-  options = {}
+  options = {:is_tester => true}
   optparse = OptionParser.new do|opts|
     opts.banner = "Usage: cookie.rb [options]"
     
@@ -46,6 +47,10 @@ if __FILE__ == $0
     
     opts.on('-i', '--id ID', 'define what id you want the cookie to have.') do |id|
       options[:id_string] = id
+    end
+    
+    opts.on('-t', '--test BOOLEAN', 'should this be marked as a tester user? "true" or "false" (defaulting to "true")') do |is_tester|
+      options[:is_tester] = is_tester == 'true'
     end
     
     opts.on( '-h', '--help', 'Display this screen' ) do
