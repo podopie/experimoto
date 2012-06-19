@@ -78,7 +78,7 @@
     }
   }
   function delete_group(i) {
-    n = document.getElementById('groups_table_tbody').children.length;
+    n = document.getElementsByClassName('group').length;
     for(; i < n - 1; i++) {
       document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
       document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
