@@ -1,4 +1,5 @@
 <form method="post" class="experiment-form">
+  <input type="hidden" name="id" value="<%= @experiment.id %>" />
   <ul>
     <li>
       <label for="experiment_name">Experiment Name:</label>
@@ -11,10 +12,10 @@
     <li>
       Experiment Type:<br />
       <label for="type1">
-        <input type="radio" name="type" id="type1" value="ABExperiment" />A/B Test
+        <input type="radio" name="type" id="typeAB" value="ABExperiment" />A/B Test
       </label>
       <label for="type2">
-        <input type="radio" name="type" id="type2" value="UCB1Experiment" />UCB Experiment
+        <input type="radio" name="type" id="typeUCB1" value="UCB1Experiment" />UCB Experiment
       </label>
     </li>
     <li>
@@ -76,8 +77,25 @@
     }
   }
   $(document).ready(function() {
-    add_group();
-    add_group();
+    <% if @experiment %>
+      $('#experiment_name').val('<%= @experiment.name %>')
+      $('#description').val('<%= @experiment.description %>')
+      <% if 'ABExperiment' == @experiment.type %>
+        $('#typeAB').attr('checked', true)
+      <% end %>
+      <% if 'UCB1Experiment' == @experiment.type %>
+        $('#typeUCB1').attr('checked', true)
+      <% end %>
+      $('#utility_function').val('<%= @experiment.utility_function_string %>')
+      <% for group_name, i in @experiment.groups.keys.sort.zip(1000.times.to_a) %>
+        add_group();
+        $('#group_name_<%= i %>').val('<%= group_name %>');
+        $('#group_weight_<%= i %>').val('<%= @experiment.group_split_weights[group_name] %>');
+      <% end %>
+    <% else %>
+      add_group();
+      add_group();
+    <% end %>
     $('.addGroup').click(function() {
       add_group();
     })

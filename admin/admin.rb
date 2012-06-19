@@ -24,10 +24,10 @@ get '/' do
 end
 
 get '/new/univariate' do
-  erb :create_univariate
+  erb :create_univariate, :locals => {:experiment => nil}
 end
 
-put '/new/univariate' do
+post '/new/univariate' do
   x = $experimoto.add_new_experiment(params_to_experiment_hash(params))
   puts x.inspect
   redirect '/'
@@ -46,11 +46,11 @@ post '/new/multivariate' do
 end
 
 get '/experiment/:id/edit' do
-  experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
-  erb :edit, :locals => {:experiment => experiment}
+  @experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  erb :edit #, :locals => {:experiment => experiment}
 end
 
-put '/experiment/:id/edit' do
+post '/experiment/:id/edit' do
   x = $experimoto.replace_experiment(params_to_experiment_hash(params).merge(:id => params[:id]))
   puts x.inspect
   redirect "/experiment/#{params[:id]}"
