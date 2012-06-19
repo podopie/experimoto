@@ -19,7 +19,7 @@ get '/new/univariate' do
 end
 
 post '/new/univariate' do
-  name = params[:name]
+  experiment_name = params[:experiment_name]
   type = params[:type]
   description =  params[:description]
   groups = []
@@ -31,15 +31,17 @@ post '/new/univariate' do
     weight = nil
     begin
       weight = params["group_weight_#{i}"].to_f
+      weight = nil if weight <= 0.0
     rescue
     end
     weights[name] = weight if weight
   end
   uf = params[:utility_function]
   uf = nil if uf.nil? || uf.size < 1
-  $experimoto.add_new_experiment(:name => name, :type => type, :description => description,
-                                 :groups => groups, :group_split_weights => weights,
-                                 :utility_function => uf)
+  x = $experimoto.add_new_experiment(:name => experiment_name, :type => type, :description => description,
+                                     :groups => groups, :group_split_weights => weights,
+                                     :utility_function => uf)
+  puts x.inspect
   redirect '/experiment'
 end
 
@@ -82,7 +84,7 @@ post '/experiment/:id/edit' do
 end
 
 get '/experiment/:id' do
-  experiment = @experiments.id
+  experiment = $experimoto.experiments.values.find { |x| x.id == id }
   erb :experiment, :locals => {:experiment => experiment}
 end
 
