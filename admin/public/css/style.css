@@ -1,0 +1,4 @@
+.nav ul { list-style: none; }
+.nav ul li { float: left; padding: 6px; }
+
+.body { clear: both; }

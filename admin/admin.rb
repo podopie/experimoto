@@ -13,11 +13,18 @@ $experimoto.start_syncing_thread
 require 'sinatra'
 
 get '/' do
-  erb :index
+  experiments = []
+  $experimoto.mutex.synchronize do
+    $experimoto._db_sync
+    $experimoto.experiments.keys.sort.each do |k|
+      experiments << $experimoto.experiments[k]
+    end
+  end
+  erb :index, :locals => {:experiments => experiments}
 end
 
 get '/new/univariate' do
-  erb :create
+  erb :create_univariate
 end
 
 post '/new/univariate' do
@@ -44,7 +51,7 @@ post '/new/univariate' do
                                      :groups => groups, :group_split_weights => weights,
                                      :utility_function => uf)
   puts x.inspect
-  redirect '/experiment'
+  redirect '/'
 end
 
 get '/new/multivariate' do
