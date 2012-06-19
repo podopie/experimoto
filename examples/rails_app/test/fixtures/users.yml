@@ -2,8 +2,8 @@
 
 one:
   name: MyString
-  type: 
+  sub_type: 
 
 two:
   name: MyString
-  type: 
+  sub_type: 
