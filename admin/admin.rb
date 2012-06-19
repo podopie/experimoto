@@ -66,24 +66,6 @@ post '/new/multivariate' do
   redirect '/experiment'
 end
 
-get '/experiment' do
-  experiments = []
-  $experimoto.mutex.synchronize do
-    $experimoto._db_sync
-    $experimoto.experiments.keys.sort.each do |k|
-      experiments << $experimoto.experiments[k]
-    end
-  end
-  erb :show, :locals => {:experiments => experiments}
-end
-
-get '/experiment_create' do
-  params.each do |k,v|
-    params[k.to_sym] = v
-  end
-  $experimoto.add_new_experiment(params)
-end
-
 get '/experiment/:id/edit' do
   erb :edit
 end
