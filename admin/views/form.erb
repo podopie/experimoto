@@ -32,20 +32,9 @@
           </tr>
         </thead>
         <tbody id="groups_table_tbody">
-          <tr class="group" id="group_tr_0">
-            <td>
-              <input type="text" id="group_name_0" name="group_name_0" />
-            </td>
-            <td>
-              <input type="text" id="group_weight_0" name="group_weight_0" />
-            </td>
-            <td>
-              <button type="button" onclick="javascript:delete_group(0)">Delete</button>
-            </td>
-          </tr>
         </tbody>
       </table>
-      <button type="button" onclick="javascript:add_group();">Add</button>
+      <button type="button" class="addGroup">Add</button>
     </li>
   </ul>
 <button type="submit" value="send">Submit!</button>
@@ -63,7 +52,7 @@
     s += '<input type="text" id="group_weight_'+n+'" name="group_weight_'+n+'" />';
     s += '</td>';
     s += '<td>';
-    s += '<button type="button" onclick="javascript:delete_group('+n+')">Delete</button>';
+    s += '<button type="button" class="deleteGroup" onclick="javascript:delete_group('+n+')">Delete</button>';
     s += '</td>';
     s += '</tr>';
     var tmp = document.createElement('tbody');
@@ -86,4 +75,11 @@
       x.parentNode.removeChild(x);
     }
   }
+  $(document).ready(function() {
+    add_group();
+    add_group();
+    $('.addGroup').click(function() {
+      add_group();
+    })
+  })
 </script>
