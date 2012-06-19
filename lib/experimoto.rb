@@ -4,6 +4,7 @@
 require 'date'
 require 'openssl'
 require 'thread'
+require 'set'
 
 require 'rubygems'
 require 'json'
@@ -134,6 +135,7 @@ module Experimoto
       # TODO: insert any experiments from our config file if they're
       # not already present in db?
       
+      @experiments = {}
       db_experiments.each do |x|
         @experiments[x.name] = x
       end
@@ -159,6 +161,35 @@ module Experimoto
       
       db_sync
       @mutex.synchronize { @experiments[experiment.name] }
+    end
+    
+    def delete_experiment(experiment_name, opts={})
+      @mutex.synchronize { _delete_experiment(experiment_name, opts) }
+    end
+    def _delete_experiment(experiment_name, opts={})
+      return unless @experiments.include?(experiment_name)
+      to_delete = Set.new
+      to_delete.add(experiment_name)
+      
+      n0 = nil
+      n1 = to_delete.size
+      until n0 == n1
+        @experiments.values.each do |x|
+          if x.is_view? && to_delete.include?(x.target_experiment_name)
+            to_delete.add(x.name)
+          end
+        end
+        n0 = n1
+        n1 = to_delete.size
+      end
+      
+      @dbh.prepare('delete from experiments where name = ?') do |sth|
+        to_delete.to_a.each do |name|
+          sth.execute(name)
+        end
+      end
+      
+      _db_sync
     end
     
     def add_new_experiment(opts)

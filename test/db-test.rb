@@ -3,6 +3,42 @@ require File.expand_path(File.join(File.dirname(__FILE__),'..','test','test_help
 
 class TestDB < Test::Unit::TestCase
   
+  def test_experiment_deletion
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2')
+    assert(e.experiments.include?('test-experiment'))
+    assert(e.experiments.include?('test-experiment2'))
+    e.delete_experiment('test-experiment')
+    assert(!e.experiments.include?('test-experiment'))
+    assert(e.experiments.include?('test-experiment2'))
+  end
+  
+  def test_experiment_view_deletion_cascade
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment', :multivariate => true,
+                         :experiments => {'test1' => ['1','2','3'], 'test2' => ['1','2','3'] })
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2', :multivariate => true,
+                         :experiments => {'test12' => ['1','2','3'], 'test22' => ['1','2','3'] })
+    assert(e.experiments.include?('test-experiment'))
+    assert(e.experiments.include?('test1'))
+    assert(e.experiments.include?('test2'))
+    assert(e.experiments.include?('test-experiment2'))
+    assert(e.experiments.include?('test12'))
+    assert(e.experiments.include?('test22'))
+    e.delete_experiment('test-experiment')
+    assert(!e.experiments.include?('test-experiment'))
+    assert(!e.experiments.include?('test1'))
+    assert(!e.experiments.include?('test2'))
+    assert(e.experiments.include?('test-experiment2'))
+    assert(e.experiments.include?('test12'))
+    assert(e.experiments.include?('test22'))
+  end
+  
   def test_experiment_acquisition
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     
