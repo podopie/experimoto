@@ -14,3 +14,6 @@ body { margin: 24px; }
 .experiment-form input[type="radio"] {
   margin-right: 10px;
 }
+
+.experiment input {
+}

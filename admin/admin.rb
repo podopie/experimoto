@@ -67,11 +67,35 @@ post '/new/multivariate' do
 end
 
 get '/experiment/:id/edit' do
-  erb :edit
+  experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  erb :edit, :locals => {:experiment => experiment}
 end
 
-post '/experiment/:id/edit' do
-  erb :edit
+put '/experiment/:id/edit' do
+  experiment_name = params[:experiment_name]
+  type = params[:type]
+  description =  params[:description]
+  groups = []
+  weights = {}
+  1000.times do |i|
+    break unless params["group_name_#{i}"]
+    name = params["group_name_#{i}"]
+    groups << name
+    weight = nil
+    begin
+      weight = params["group_weight_#{i}"].to_f
+      weight = nil if weight <= 0.0
+    rescue
+    end
+    weights[name] = weight if weight
+  end
+  uf = params[:utility_function]
+  uf = nil if uf.nil? || uf.size < 1
+  x = $experimoto.add_new_experiment(:name => experiment_name, :type => type, :description => description,
+                                     :groups => groups, :group_split_weights => weights,
+                                     :utility_function => uf)
+  puts x.inspect
+  redirect '/'
 end
 
 get '/experiment/:id' do
