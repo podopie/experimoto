@@ -4,7 +4,9 @@ require 'rdbi'
 require 'rdbi-driver-sqlite3'
 require File.expand_path(File.join(File.dirname(__FILE__),'..','lib','experimoto'))
 
-$experimoto = Experimoto::Experimoto.new(:dbh => RDBI.connect(:SQLite3, :database => ":memory:"))
+db_location = File.expand_path(File.join(File.dirname(__FILE__),'..','test-db.sqlite3'))
+database_handle = RDBI.connect(:SQLite3, :database => db_location)
+$experimoto = Experimoto::Experimoto.new(:dbh => database_handle)
 $experimoto.db_sync
 $experimoto.start_syncing_thread
 
