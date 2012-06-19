@@ -1,0 +1,28 @@
+<html>
+<head></head>
+<body>
+  <h1>Experiment View for <%= experiment.id %></h1>
+  <h2>Current Experiment Group and Values</h2>
+  <form method="get" action="/experiment/<%= experiment.id %>/edit">
+    <input type="hidden" name="name" value="<%#= experiment.name %>">
+    <input type="submit" value="Edit" />
+  </form>
+  <ul>
+    <li class="experiment">
+      <p><a href="/experiment/<%= experiment.id %>"><%#= experiment.name %></a></p>
+      <p><%= experiment.type %> </p>
+
+    </li>
+  </ul>
+
+  <h2>Add new experiment group</h2>
+  <form method="post">
+    <label for "value">Group ID</label>
+    <input type="text" name="value" id="value"/>
+    <label for "key">Group Percentage</label>
+    <input type="text" name="key" id="key" />
+    <button type="submit">Add new group</button>
+  </form>
+  <p class="warning">Key should equal 100!</p>
+</body>
+</html>

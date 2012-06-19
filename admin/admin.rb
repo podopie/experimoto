@@ -22,10 +22,21 @@ post '/new/univariate' do
   name = params[:name]
   type = params[:type]
   $experimoto.add_new_experiment(:name => name, :type => type)
-  redirect '/experiment_list'
+  redirect '/experiment'
 end
 
-get '/experiment_list' do
+get '/new/multivariate' do
+  erb :create_multivariate
+end
+
+post '/new/multivariate' do
+  name = params[:name]
+  type = params[:type]
+  $experimoto.add_new_experiment(:name => name, :type => type)
+  redirect '/experiment'
+end
+
+get '/experiment' do
   experiments = []
   $experimoto.mutex.synchronize do
     $experimoto._db_sync
@@ -45,4 +56,15 @@ end
 
 get '/experiment/:id/edit' do
   erb :edit
+end
+
+get '/experiment/:id' do
+  experiment = @experiments.id
+  erb :experiment, :locals => {:experiment => experiment}
+end
+
+post '/experiment/:id' do
+  key = params[key]
+  value = params[value]
+  $experimoto.push_data(:data => [key, value])
 end
