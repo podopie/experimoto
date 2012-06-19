@@ -35,7 +35,7 @@
 	</tr>
       </thead>
       <tbody id="groups_table_tbody">
-	<tr class="group">
+	<tr class="group" id="group_tr_0">
 	  <td>
 	    <input type="text" id="group_name_0" name="group_name_0" />
 	  </td>
@@ -56,10 +56,9 @@
 
 <script>
   function add_group() {
-    /* BUG: this clears out the contents of the table's inputs... why? */
     var n = document.getElementsByClassName('group').length;
     var s = '';
-    s += '<tr class="group">';
+    s += '<tr class="group" id="group_tr_'+n+'">';
     s += '<td>';
     s += '<input type="text" id="group_name_'+n+'" name="group_name_'+n+'" />'
     s += '</td>';
@@ -79,7 +78,14 @@
     }
   }
   function delete_group(i) {
-    /* TODO! (note: should "shift" things, not just delete a row) */
+    n = document.getElementById('groups_table_tbody').children.length;
+    for(; i < n - 1; i++) {
+      document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
+      document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
+    }
+    /* TODO: should warn if deleting last group? we need to have at least one. */
+    x = document.getElementById('group_tr_'+(n-1));
+    x.parentNode.removeChild(x);
   }
 </script>
 
