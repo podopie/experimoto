@@ -22,9 +22,9 @@
     <li class="view">
       <%= view.name %> <br />
       View into <%= "#{view.target_experiment_name}#{view.json_lookup_index ? '['+view.json_lookup_index.to_s+']' : ''}" %> <br />
-      <form method="post" action="./view_edit">
-  <input type="hidden" name="name" value="<%= view.name %>">
-  <input type="submit" value="Edit" />
+      <form method="get" action="/view/<%= view.id %>/edit">
+        <input type="hidden" name="name" value="<%= view.name %>">
+        <input type="submit" value="Edit" />
       </form>
     </li>
     <% end %>

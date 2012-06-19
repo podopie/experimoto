@@ -10,7 +10,27 @@ $experimoto = Experimoto::Experimoto.new(:dbh => database_handle)
 $experimoto.db_sync
 $experimoto.start_syncing_thread
 
+require 'base64'
+require 'openssl'
 require 'sinatra'
+require 'rack/csrf'
+
+configure do
+  use Rack::Session::Cookie, :secret => Base64.encode64(OpenSSL::Random.random_bytes(100))[0..-4].gsub('+','-').gsub('/','_')
+  use Rack::Csrf, :raise => true
+end
+
+helpers do
+  def csrf_token
+    Rack::Csrf.csrf_token(env)
+  end
+
+  def csrf_tag
+    Rack::Csrf.csrf_tag(env)
+  end
+end
+
+
 
 get '/' do
   experiments = []
@@ -51,9 +71,10 @@ get '/experiment/:id/edit' do
 end
 
 post '/experiment/:id/edit' do
-  x = $experimoto.replace_experiment(params_to_experiment_hash(params).merge(:id => params[:id]))
+  puts "params[:experiment_id] #{params[:experiment_id]}"
+  x = $experimoto.replace_experiment(params_to_experiment_hash(params).merge(:id => params[:experiment_id]))
   puts x.inspect
-  redirect "/experiment/#{params[:id]}"
+  redirect "/experiment/#{params[:experiment_id]}"
 end
 
 get '/experiment/:id' do
