@@ -2,15 +2,18 @@
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="/css/normalize.css" />
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="/css/style.css" />
 </head>
 <body>
-<div class="nav">
-  <ul>
-    <li><a href="/">List Experiments</a></li>
-    <li><a href="/new/univariate">Create New Experiment (Univariate)</a></li>
-    <li><a href="/new/multivariate">Create New Experiment (Multivariate)</a></li>
-  </ul>
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li><a href="/">List Experiments</a></li>
+      <li><a href="/new/univariate">Create New Experiment (Univariate)</a></li>
+      <li><a href="/new/multivariate">Create New Experiment (Multivariate)</a></li>
+    </ul>
+  </div>
 </div>
 <div class="body">
   <%= yield %>

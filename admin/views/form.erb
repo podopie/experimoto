@@ -36,10 +36,10 @@
         <tbody id="groups_table_tbody">
         </tbody>
       </table>
-      <button type="button" class="addGroup">Add</button>
+      <button type="button" class="addGroup btn">Add</button>
     </li>
   </ul>
-<button type="submit" value="send">Submit!</button>
+<button type="submit" value="send" class="btn btn-primary">Submit!</button>
 </form>
 
 <script>
@@ -54,7 +54,7 @@
     s += '<input type="text" id="group_weight_'+n+'" name="group_weight_'+n+'" />';
     s += '</td>';
     s += '<td>';
-    s += '<button type="button" class="deleteGroup" onclick="javascript:delete_group('+n+')">Delete</button>';
+    s += '<button type="button" class="deleteGroup btn btn-danger" onclick="javascript:delete_group('+n+')">Delete</button>';
     s += '</td>';
     s += '</tr>';
     var tmp = document.createElement('tbody');
