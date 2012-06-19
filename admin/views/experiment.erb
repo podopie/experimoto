@@ -16,8 +16,8 @@
 <tr>
   <td><%= group_name %></td>
   <td><%= experiment.group_split_weights[group_name] %></td>
-  <td><%= experiment.plays[group_name] %></td>
-  <td><%= experiment.utility(group_name).inspect %></td>
+  <td><%= experiment.plays[group_name] %> participants</td>
+  <td><%= experiment.utility(group_name).inspect %> utils</td>
 </tr>
 <% end %>
 </tbody>
