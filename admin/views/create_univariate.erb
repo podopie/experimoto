@@ -83,7 +83,6 @@
         document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
         document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
       }
-    /* TODO: should warn if deleting last group? we need to have at least one. */
       x = document.getElementById('group_tr_'+(n-1));
       x.parentNode.removeChild(x);
     }
