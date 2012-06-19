@@ -20,10 +20,7 @@ module Experimoto
     end
     
     def to_json(*a)
-      {
-        'json_class'   => self.class.name,
-        'name'         => @name
-      }.to_json(*a)
+      { 'json_class' => self.class.name, 'name' => @name }.to_json(*a)
     end
     
     def self.json_create(o)
