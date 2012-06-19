@@ -44,6 +44,20 @@ class TestDB < Test::Unit::TestCase
     assert_equal([1], db_row)
   end
   
+  def test_experiment_name_uniqueness
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+    assert_raise SQLite3::ConstraintException do
+      e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+    end
+    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2')
+    assert_raise SQLite3::ConstraintException do
+      e.replace_experiment(:id => x.id, :type => 'ABExperiment', :name => 'test-experiment')
+    end
+  end
+  
   def test_replace_experiment_description
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)

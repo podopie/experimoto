@@ -70,7 +70,7 @@ module Experimoto
                    ['id integer primary key autoincrement',
                     'uid char(22)',
                     'eid char(22)',
-                    'group_name char(200)',
+                    'group_name varchar(200)',
                     'created_at datetime',
                     'modified_at datetime'
                    ].join(',') + ');')
@@ -78,13 +78,31 @@ module Experimoto
                    ['id integer primary key autoincrement',
                     'uid char(22)',
                     'eid char(22)',
-                    'group_name char(200)',
+                    'group_name varchar(200)',
                     'key varchar(200)',
                     'value integer',
                     'created_at datetime',
                     'modified_at datetime'
                    ].join(',') + ');')
       # TODO: indexes
+      indexes = ['create unique index experiment_names on experiments(name asc);',
+                 'create index user_created_at  on users(created_at  asc);',
+                 'create index user_modified_at on users(modified_at asc);',
+                 'create index grouping_eid_group on events(eid, group_name);',
+                 'create index grouping_created_at  on groupings(created_at  asc);',
+                 'create index grouping_modified_at on groupings(modified_at asc);',
+                 'create index event_eid_group_key on events(eid, group_name, key);',
+                 'create index event_created_at  on events(created_at  asc);',
+                 'create index event_modified_at on events(modified_at asc);',
+                ]
+      indexes.each do |ix|
+        begin
+          @dbh.execute(ix)
+        rescue SQLite3::SQLException
+          # NOTE: mysql might not support create index if not exists,
+          # so just gonna have to rescue a lot of exceptions.
+        end
+      end
       @generated_tables = true
     end
 
