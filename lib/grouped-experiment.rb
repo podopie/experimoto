@@ -75,7 +75,7 @@ module Experimoto
     def utility(group_name, given_utility_function = nil, dbh = nil)
       expr = given_utility_function || utility_function_string
       if given_utility_function
-        raise 'hell' if dbh.nil?
+        raise ArgumentError if dbh.nil?
         sync_play_data(dbh)
         utility_function_variables(expr).each do |k|
           sync_event_data(dbh, k)
@@ -83,13 +83,13 @@ module Experimoto
       end
       utility_function_variables(expr).each do |k|
         if 0 == @plays[group_name]
-          avg = 0
+          avg = 0.0
         else
           avg = (1.0 * (@event_totals[group_name][k])) / @plays[group_name]
         end
         expr = expr.gsub(k, "(#{avg})")
       end
-      unless(0 == expr.gsub(/[0-9\+\-\*\/\(\)\.]/,'').size &&
+      unless(0 == expr.gsub(/[0-9\+\-\*\/\(\)\. ]/,'').size &&
              expr.count('(') == expr.count(')'))
         raise "invalid utility function: `#{expr}`"
       end

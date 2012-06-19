@@ -9,7 +9,7 @@ class TestUtilityFunctions < Test::Unit::TestCase
     
     x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test-experiment',
                              :groups => ['0','1','2','3','4'],
-                             :utility_function => '(payment/1000)+sign_up')
+                             :utility_function => '(payment/1000)+ sign_up')
     
     choices = [0,0,0,0,0]
     100.times do |ix|
