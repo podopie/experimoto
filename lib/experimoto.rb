@@ -208,10 +208,20 @@ module Experimoto
       save_experiment(:experiment => exp)
     end
     
-    def rails_sample(cookie, experiment_name, opts = {})
+    def rails_sample(cookies, experiment_name, opts = {})
       experiment_name = "#{experiment_name}" # in case people like symbols
-      user = self.user_from_cookie(cookie)
-      user_experiment(user, experiment_name, opts)
+      c = {'experimoto_mac' => cookies['experimoto_mac'], 'experimoto_data' => cookies['experimoto_data'] }
+      user = self.user_from_cookie(c)
+      sample = user_experiment(user, experiment_name, opts)
+      c = user_to_cookie(user)
+      c.each { |k,v| cookies[k] = v }
+      sample
+    end
+    
+    def rails_track(cookies, key, value=1)
+      c = {'experimoto_mac' => cookies['experimoto_mac'], 'experimoto_data' => cookies['experimoto_data'] }
+      user = self.user_from_cookie(c)
+      track(user, key, value=1)
     end
     
     def user_experiment(user, experiment_name, opts = {})
