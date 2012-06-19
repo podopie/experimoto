@@ -29,20 +29,24 @@
   <li>
     Experiment Groups/Buckets:
     <table id="groups_table">
-      <tr>
-	<th>Group Name</th><th>Group Split %</th><th></th>
-      </tr>
-      <tr class="group">
-	<td>
-	  <input type="text" id="group_name_0" name="group_name_0" />
-	</td>
-	<td>
-	  <input type="text" id="group_weight_0" name="group_weight_0" />
-	</td>
-	<td>
-	  <button type="button" onclick="javascript:delete_group(0)">Delete</button>
-	</td>
-      </tr>
+      <thead>
+	<tr>
+	  <th>Group Name</th><th>Group Split %</th><th></th>
+	</tr>
+      </thead>
+      <tbody id="groups_table_tbody">
+	<tr class="group">
+	  <td>
+	    <input type="text" id="group_name_0" name="group_name_0" />
+	  </td>
+	  <td>
+	    <input type="text" id="group_weight_0" name="group_weight_0" />
+	  </td>
+	  <td>
+	    <button type="button" onclick="javascript:delete_group(0)">Delete</button>
+	  </td>
+	</tr>
+      </tbody>
     </table>
     <button type="button" onclick="javascript:add_group();">Add</button>
   </li>
@@ -66,7 +70,13 @@
     s += '<button type="button" onclick="javascript:delete_group('+n+')">Delete</button>';
     s += '</td>';
     s += '</tr>';
-    document.getElementById('groups_table').innerHTML += s;
+    var tmp = document.createElement('tbody');
+    tmp.innerHTML = s;
+    var elements = tmp.childNodes;
+    var i;
+    for(i = 0; i < elements.length ; i++){
+      document.getElementById('groups_table_tbody').appendChild(elements[i]);
+    }
   }
   function delete_group(i) {
     /* TODO! (note: should "shift" things, not just delete a row) */
