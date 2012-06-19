@@ -10,7 +10,7 @@ module Experimoto
   
   class GroupedExperiment < Experiment
     
-    attr_accessor :plays
+    attr_accessor :plays, :event_totals
     
     def initialize(opts={})
       super(opts)
