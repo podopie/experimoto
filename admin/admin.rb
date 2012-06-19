@@ -84,7 +84,9 @@ post '/experiment/:id/edit' do
 end
 
 get '/experiment/:id' do
-  experiment = $experimoto.experiments.values.find { |x| x.id == id }
+  puts "id: #{params[:id]}"
+  experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  puts "experiment: #{experiment.inspect}"
   erb :experiment, :locals => {:experiment => experiment}
 end
 
