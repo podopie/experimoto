@@ -22,7 +22,24 @@ post '/new/univariate' do
   name = params[:name]
   type = params[:type]
   description =  params[:description]
-  $experimoto.add_new_experiment(:name => name, :type => type, :description => description)
+  groups = []
+  weights = {}
+  1000.times do |i|
+    break unless params["group_name_#{i}"]
+    name = params["group_name_#{i}"]
+    groups << name
+    weight = nil
+    begin
+      weight = params["group_weight_#{i}"].to_f
+    rescue
+    end
+    weights[name] = weight if weight
+  end
+  uf = params[:utility_function]
+  uf = nil if uf.nil? || uf.size < 1
+  $experimoto.add_new_experiment(:name => name, :type => type, :description => description,
+                                 :groups => groups, :group_split_weights => weights,
+                                 :utility_function => uf)
   redirect '/experiment'
 end
 
