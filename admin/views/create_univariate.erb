@@ -1,53 +1,55 @@
 <h1>New Univariate Test</h1>
-<form method="post">
+<form method="post" class="experiment-form">
   <ul>
-  <li>
-    <label for="experiment_name">Experiment Name:</label>
-    <input type="text" id="experiment_name" name="experiment_name" />
-  </li>
-  <li>
-    <label for="description">Experiment Description:</label>
-    <input type="text" id="description" name="description" />
-  </li>
-  <li>
-    Experiment Type:
-    <label for="type1">
-      <input type="radio" name="type" id="type1" value="ABExperiment" />A/B Test
-    </label>
-    <label for="type2">
-      <input type="radio" name="type" id="type2" value="UCB1Experiment" />UCB Experiment
-    </label>
-  </li>
-  <li>
-    <label for="utility_function">Utility Function:</label>
-    <input type="text" id="utility_function" name="utility_function" />
-  </li>
-  <li>
-    Experiment Groups/Buckets:
-    <table id="groups_table">
-      <thead>
-	<tr>
-	  <th>Group Name</th><th>Group Split %</th><th></th>
-	</tr>
-      </thead>
-      <tbody id="groups_table_tbody">
-	<tr class="group" id="group_tr_0">
-	  <td>
-	    <input type="text" id="group_name_0" name="group_name_0" />
-	  </td>
-	  <td>
-	    <input type="text" id="group_weight_0" name="group_weight_0" />
-	  </td>
-	  <td>
-	    <button type="button" onclick="javascript:delete_group(0)">Delete</button>
-	  </td>
-	</tr>
-      </tbody>
-    </table>
-    <button type="button" onclick="javascript:add_group();">Add</button>
-  </li>
+    <li>
+      <label for="experiment_name">Experiment Name:</label>
+      <input type="text" id="experiment_name" name="experiment_name" />
+    </li>
+    <li>
+      <label for="description">Experiment Description:</label>
+      <input type="text" id="description" name="description" />
+    </li>
+    <li>
+      Experiment Type:<br />
+      <label for="type1">
+        <input type="radio" name="type" id="type1" value="ABExperiment" />A/B Test
+      </label>
+      <label for="type2">
+        <input type="radio" name="type" id="type2" value="UCB1Experiment" />UCB Experiment
+      </label>
+    </li>
+    <li>
+      <label for="utility_function">Utility Function:</label>
+      <input type="text" id="utility_function" name="utility_function" />
+    </li>
+    <li>
+      Experiment Groups/Buckets:
+      <table id="groups_table">
+        <thead>
+          <tr>
+            <th>Group Name</th>
+            <th>Group Split %</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="groups_table_tbody">
+          <tr class="group" id="group_tr_0">
+            <td>
+              <input type="text" id="group_name_0" name="group_name_0" />
+            </td>
+            <td>
+              <input type="text" id="group_weight_0" name="group_weight_0" />
+            </td>
+            <td>
+              <button type="button" onclick="javascript:delete_group(0)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" onclick="javascript:add_group();">Add</button>
+    </li>
   </ul>
-  <button type="submit" value="send">Submit!</button>
+<button type="submit" value="send">Submit!</button>
 </form>
 
 <script>
@@ -75,12 +77,15 @@
   }
   function delete_group(i) {
     n = document.getElementsByClassName('group').length;
-    for(; i < n - 1; i++) {
-      document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
-      document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
-    }
+    if (n === 1) { alert('need at least one group') }
+    else {
+      for(; i < n - 1; i++) {
+        document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
+        document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
+      }
     /* TODO: should warn if deleting last group? we need to have at least one. */
-    x = document.getElementById('group_tr_'+(n-1));
-    x.parentNode.removeChild(x);
+      x = document.getElementById('group_tr_'+(n-1));
+      x.parentNode.removeChild(x);
+    }
   }
 </script>
