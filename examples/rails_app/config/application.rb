@@ -58,5 +58,22 @@ module DatRailsApp
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    
+    config.after_initialize do
+      require 'rubygems'
+      require 'thread'
+      require 'rdbi'
+      require 'rdbi-driver-sqlite3'
+      require File.expand_path(File.join(File.dirname(__FILE__),'..','..','..','lib','experimoto'))
+      
+      experimoto_db_location = File.expand_path(File.join(File.dirname(__FILE__),
+                                                          '..','..','..','test-db.sqlite3'))
+      database_handle = RDBI.connect(:SQLite3, :database => experimoto_db_location)
+      $experimoto = Experimoto::Experimoto.new(:dbh => database_handle)
+      $experimoto.db_sync
+      $experimoto.start_syncing_thread(:sleep_time => 1)
+
+    end
+    
   end
 end

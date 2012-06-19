@@ -7,8 +7,8 @@ capybara-*.html
 .rspec
 .bundle
 *vendor/bundle
-*log/*.log
-*tmp/*
+*log*.log
+*tmp*
 *.sqlite3
 /public/system/*
 /coverage/

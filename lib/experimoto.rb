@@ -208,6 +208,12 @@ module Experimoto
       save_experiment(:experiment => exp)
     end
     
+    def rails_sample(cookie, experiment_name, opts = {})
+      experiment_name = "#{experiment_name}" # in case people like symbols
+      user = self.user_from_cookie(cookie)
+      user_experiment(user, experiment_name, opts)
+    end
+    
     def user_experiment(user, experiment_name, opts = {})
       @mutex.synchronize do
         _user_experiment(user, experiment_name, opts)

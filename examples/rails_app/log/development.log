@@ -3,3 +3,425 @@
 Started GET "/assets/rails.png" for 127.0.0.1 at Tue Jun 19 11:16:02 -0400 2012
 Connecting to database specified by database.yml
 Served asset /rails.png - 200 OK (5ms)
+
+
+Started GET "/assets/rails.png" for 127.0.0.1 at Tue Jun 19 11:56:25 -0400 2012
+Connecting to database specified by database.yml
+Served asset /rails.png - 304 Not Modified (1ms)
+
+
+Started GET "/assets/rails.png" for 127.0.0.1 at Tue Jun 19 11:56:25 -0400 2012
+Served asset /rails.png - 304 Not Modified (0ms)
+Connecting to database specified by database.yml
+  [1m[36m (0.1ms)[0m  [1mselect sqlite_version(*)[0m
+  [1m[35m (3.0ms)[0m  CREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) 
+  [1m[36m (0.1ms)[0m  [1mPRAGMA index_list("schema_migrations")[0m
+  [1m[35m (1.9ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+Migrating to CreateUsers (20120618150326)
+  [1m[35m (0.0ms)[0m  begin transaction
+  [1m[36m (0.3ms)[0m  [1mCREATE TABLE "users" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "foobar" text, "sub_cost" integer, "sub_type" varchar(255), "created_at" datetime NOT NULL, "updated_at" datetime NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ('20120618150326')
+  [1m[36m (0.8ms)[0m  [1mcommit transaction[0m
+  [1m[35m (0.1ms)[0m  select sqlite_version(*)
+  [1m[36m (0.1ms)[0m  [1mSELECT "schema_migrations"."version" FROM "schema_migrations" [0m
+  [1m[35m (0.0ms)[0m  PRAGMA index_list("users")
+
+
+Started GET "/assets/rails.png" for 127.0.0.1 at Tue Jun 19 11:56:54 -0400 2012
+Connecting to database specified by database.yml
+Served asset /rails.png - 304 Not Modified (1ms)
+
+
+Started GET "/" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Connecting to database specified by database.yml
+Processing by HomeController#index as HTML
+  Rendered home/index.html.erb within layouts/application (1.4ms)
+Compiled home.css  (4ms)  (pid 12808)
+Compiled scaffolds.css  (22ms)  (pid 12808)
+Compiled users.css  (1ms)  (pid 12808)
+Compiled application.css  (50ms)  (pid 12808)
+Compiled jquery.js  (4ms)  (pid 12808)
+Compiled jquery_ujs.js  (0ms)  (pid 12808)
+Compiled home.js  (95ms)  (pid 12808)
+Compiled users.js  (58ms)  (pid 12808)
+Compiled application.js  (202ms)  (pid 12808)
+Completed 200 OK in 455ms (Views: 454.7ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /application.css - 200 OK (8ms)
+
+
+Started GET "/assets/home.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /home.css - 200 OK (2ms)
+
+
+Started GET "/assets/scaffolds.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /scaffolds.css - 200 OK (2ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /users.css - 200 OK (2ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /jquery.js - 200 OK (4ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /jquery_ujs.js - 200 OK (3ms)
+
+
+Started GET "/assets/home.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /home.js - 200 OK (1ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /users.js - 200 OK (1ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:32 -0400 2012
+Served asset /application.js - 200 OK (8ms)
+
+
+Started GET "/users" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Processing by UsersController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1mSELECT "users".* FROM "users" [0m
+  Rendered users/index.html.erb within layouts/application (0.9ms)
+Completed 200 OK in 59ms (Views: 6.1ms | ActiveRecord: 1.1ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /application.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /home.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/scaffolds.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /scaffolds.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /users.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /jquery_ujs.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /jquery.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /home.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /users.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at Tue Jun 19 11:57:35 -0400 2012
+Served asset /application.js - 304 Not Modified (0ms)
+
+
+Started GET "/users/new" for 127.0.0.1 at Tue Jun 19 11:57:36 -0400 2012
+Processing by UsersController#new as HTML
+ERROR: compiling _app_views_users_new_html_erb__1561950413_2205385020 RAISED compile error
+/Users/carl/animoto/experimoto/examples/rails_app/app/views/users/new.html.erb:5: syntax error, unexpected '=', expecting ')'
+..., :some_experiment, :default = 'blah') );@output_buffer.safe...
+                              ^
+/Users/carl/animoto/experimoto/examples/rails_app/app/views/users/new.html.erb:5: syntax error, unexpected ')', expecting kEND
+...periment, :default = 'blah') );@output_buffer.safe_concat('
+                              ^
+Function body:           def _app_views_users_new_html_erb__1561950413_2205385020(local_assigns, output_buffer)
+            _old_virtual_path, @virtual_path = @virtual_path, "users/new";_old_output_buffer = @output_buffer;;@output_buffer = output_buffer || ActionView::OutputBuffer.new;@output_buffer.safe_concat('<h1>New user</h1>
+
+');@output_buffer.append= ( render 'form' );@output_buffer.safe_concat('
+');@output_buffer.safe_concat('
+');@output_buffer.append= ( $experimoto.rails_sample(cookies, :some_experiment, :default = 'blah') );@output_buffer.safe_concat('
+');@output_buffer.safe_concat('
+');@output_buffer.append= ( link_to 'Back', users_path );@output_buffer.safe_concat('
+');@output_buffer.to_s
+          ensure
+            @virtual_path, @output_buffer = _old_virtual_path, _old_output_buffer
+          end
+
+Backtrace: /Users/carl/animoto/experimoto/examples/rails_app/app/views/users/new.html.erb:11:in `compile'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/template.rb:244:in `compile!'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/template.rb:232:in `synchronize'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/template.rb:232:in `compile!'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/template.rb:144:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications.rb:125:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/template.rb:143:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/template_renderer.rb:47:in `render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/abstract_renderer.rb:38:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications.rb:123:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications/instrumenter.rb:20:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications.rb:123:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/abstract_renderer.rb:38:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/template_renderer.rb:46:in `render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/template_renderer.rb:54:in `render_with_layout'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/template_renderer.rb:45:in `render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/template_renderer.rb:18:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/renderer.rb:36:in `render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_view/renderer/renderer.rb:17:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/rendering.rb:110:in `_render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/streaming.rb:225:in `_render_template'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/rendering.rb:103:in `render_to_body'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/renderers.rb:28:in `render_to_body'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/compatibility.rb:50:in `render_to_body'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/rendering.rb:88:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/rendering.rb:16:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:40:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/core_ext/benchmark.rb:5:in `ms'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/benchmark.rb:308:in `realtime'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/core_ext/benchmark.rb:5:in `ms'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:40:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:83:in `cleanup_view_runtime'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activerecord-3.2.6/lib/active_record/railties/controller_runtime.rb:24:in `cleanup_view_runtime'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:39:in `render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/implicit_render.rb:10:in `default_render'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/mime_responds.rb:196:in `respond_to'
+/Users/carl/animoto/experimoto/examples/rails_app/app/controllers/users_controller.rb:29:in `new'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/implicit_render.rb:4:in `send_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/implicit_render.rb:4:in `send_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/base.rb:167:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/rendering.rb:10:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/callbacks.rb:18:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:414:in `_run__1163903475__process_action__1952719763__callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:405:in `send'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:405:in `__run_callback'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:385:in `_run_process_action_callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:81:in `send'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:81:in `run_callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/callbacks.rb:17:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/rescue.rb:29:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:30:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications.rb:123:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications/instrumenter.rb:20:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/notifications.rb:123:in `instrument'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/instrumentation.rb:29:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/params_wrapper.rb:206:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activerecord-3.2.6/lib/active_record/railties/controller_runtime.rb:18:in `process_action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/base.rb:121:in `process'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/abstract_controller/rendering.rb:45:in `process'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal.rb:203:in `dispatch'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal/rack_delegation.rb:14:in `dispatch'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_controller/metal.rb:246:in `action'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/routing/route_set.rb:73:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/routing/route_set.rb:73:in `dispatch'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/routing/route_set.rb:36:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/journey-1.0.4/lib/journey/router.rb:68:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/journey-1.0.4/lib/journey/router.rb:56:in `each'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/journey-1.0.4/lib/journey/router.rb:56:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/routing/route_set.rb:600:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/best_standards_support.rb:17:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/etag.rb:23:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/conditionalget.rb:25:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/head.rb:14:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/params_parser.rb:21:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/flash.rb:242:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/session/abstract/id.rb:205:in `context'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/session/abstract/id.rb:200:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/cookies.rb:338:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activerecord-3.2.6/lib/active_record/query_cache.rb:64:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activerecord-3.2.6/lib/active_record/connection_adapters/abstract/connection_pool.rb:473:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/callbacks.rb:28:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:405:in `_run__1794850063__call__4__callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:405:in `send'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:405:in `__run_callback'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:385:in `_run_call_callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:81:in `send'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/callbacks.rb:81:in `run_callbacks'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/callbacks.rb:27:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/reloader.rb:65:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/remote_ip.rb:31:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/debug_exceptions.rb:16:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/show_exceptions.rb:56:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/rack/logger.rb:26:in `call_app'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/rack/logger.rb:16:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/request_id.rb:22:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/methodoverride.rb:21:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/runtime.rb:17:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/activesupport-3.2.6/lib/active_support/cache/strategy/local_cache.rb:72:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/lock.rb:15:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/static.rb:62:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/engine.rb:479:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/application.rb:220:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/content_length.rb:14:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/rack/log_tailer.rb:17:in `call'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/handler/webrick.rb:59:in `service'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/httpserver.rb:104:in `service'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/httpserver.rb:65:in `run'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:173:in `start_thread'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:162:in `start'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:162:in `start_thread'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:95:in `start'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:92:in `each'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:92:in `start'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:23:in `start'
+/Users/carl/.rvm/rubies/ruby-1.8.7-p358/lib/ruby/1.8/webrick/server.rb:82:in `start'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/handler/webrick.rb:13:in `run'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/rack-1.4.1/lib/rack/server.rb:265:in `start'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/commands/server.rb:70:in `start'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/commands.rb:55
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/commands.rb:50:in `tap'
+/Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/railties-3.2.6/lib/rails/commands.rb:50
+./script/rails:6:in `require'
+./script/rails:6
+  Rendered users/new.html.erb within layouts/application (2.1ms)
+Completed 500 Internal Server Error in 10ms
+
+ActionView::Template::Error (compile error
+/Users/carl/animoto/experimoto/examples/rails_app/app/views/users/new.html.erb:5: syntax error, unexpected '=', expecting ')'
+..., :some_experiment, :default = 'blah') );@output_buffer.safe...
+                              ^
+/Users/carl/animoto/experimoto/examples/rails_app/app/views/users/new.html.erb:5: syntax error, unexpected ')', expecting kEND
+...periment, :default = 'blah') );@output_buffer.safe_concat('
+                              ^):
+    2: 
+    3: <%= render 'form' %>
+    4: 
+    5: <%= $experimoto.rails_sample(cookies, :some_experiment, :default = 'blah') %>
+    6: 
+    7: <%= link_to 'Back', users_path %>
+  app/views/users/new.html.erb:11:in `compile'
+  app/controllers/users_controller.rb:29:in `new'
+
+
+  Rendered /Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/templates/rescues/_trace.erb (0.9ms)
+  Rendered /Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (0.7ms)
+  Rendered /Users/carl/.rvm/gems/ruby-1.8.7-p358/gems/actionpack-3.2.6/lib/action_dispatch/middleware/templates/rescues/template_error.erb within rescues/layout (9.9ms)
+
+
+Started GET "/users/new" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Processing by UsersController#new as HTML
+  Rendered users/_form.html.erb (5.4ms)
+  Rendered users/new.html.erb within layouts/application (13.1ms)
+Completed 200 OK in 18ms (Views: 18.1ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /application.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.css?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /home.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/scaffolds.css?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /scaffolds.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /users.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /jquery.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /jquery_ujs.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.js?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /home.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /users.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at Tue Jun 19 11:58:11 -0400 2012
+Served asset /application.js - 304 Not Modified (0ms)
+
+
+Started GET "/users/new" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Processing by UsersController#new as HTML
+  Rendered users/_form.html.erb (2.7ms)
+  Rendered users/new.html.erb within layouts/application (7.2ms)
+Completed 200 OK in 13ms (Views: 12.4ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /application.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.css?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /home.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/scaffolds.css?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /scaffolds.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /users.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /jquery.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /jquery_ujs.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.js?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /home.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /users.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at Tue Jun 19 12:00:27 -0400 2012
+Served asset /application.js - 304 Not Modified (0ms)
+
+
+Started GET "/users/new" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Processing by UsersController#new as HTML
+  Rendered users/_form.html.erb (2.8ms)
+  Rendered users/new.html.erb within layouts/application (11.6ms)
+Completed 200 OK in 17ms (Views: 16.7ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /application.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.css?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /home.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/scaffolds.css?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /scaffolds.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.css?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /users.css - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /jquery.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /jquery_ujs.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/home.js?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /home.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/users.js?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /users.js - 304 Not Modified (0ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at Tue Jun 19 12:01:11 -0400 2012
+Served asset /application.js - 304 Not Modified (0ms)
