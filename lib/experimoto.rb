@@ -8,6 +8,7 @@ require 'set'
 
 require 'rubygems'
 require 'json'
+require 'rdbi'
 
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'ucb1-experiment'))

@@ -2,6 +2,6 @@
 
 <%= render 'form' %>
 
-<%= $experimoto.rails_sample(cookies, :some_experiment, :default => 'blah') %>
+<%= experiment!(:some_experiment, :default => 'blah') %> <br />
 
 <%= link_to 'Back', users_path %>

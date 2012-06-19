@@ -60,19 +60,11 @@ module DatRailsApp
     config.assets.version = '1.0'
     
     config.after_initialize do
-      require 'rubygems'
-      require 'thread'
-      require 'rdbi'
+      require File.expand_path(File.join(File.dirname(__FILE__),'..','..','..','lib','experimoto-rails'))
       require 'rdbi-driver-sqlite3'
-      require File.expand_path(File.join(File.dirname(__FILE__),'..','..','..','lib','experimoto'))
-      
-      experimoto_db_location = File.expand_path(File.join(File.dirname(__FILE__),
-                                                          '..','..','..','test-db.sqlite3'))
-      database_handle = RDBI.connect(:SQLite3, :database => experimoto_db_location)
-      $experimoto = Experimoto::Experimoto.new(:dbh => database_handle)
-      $experimoto.db_sync
-      $experimoto.start_syncing_thread(:sleep_time => 1)
-
+      db_location = File.expand_path(File.join(File.dirname(__FILE__),
+                                               '..','..','..','test-db.sqlite3'))
+      initialize_experimoto(:db => db_location, :sync_interval => 1.0)
     end
     
   end
