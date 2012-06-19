@@ -152,7 +152,7 @@ module Experimoto
           sth.execute(@id, group_name, event_name).each do |row|
             next if row.nil?
             val = row[2].nil? ? 0 : row[2]
-            @event_totals[group_name][event_name] = val.to_i
+            @event_totals[group_name][event_name] = val.to_f
             break
           end
         end

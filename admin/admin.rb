@@ -99,6 +99,7 @@ put '/experiment/:id/edit' do
 end
 
 get '/experiment/:id' do
+  $experimoto.db_sync
   puts "id: #{params[:id]}"
   experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
   puts "experiment: #{experiment.inspect}"

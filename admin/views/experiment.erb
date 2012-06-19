@@ -1,12 +1,25 @@
-  <h1>Experiment View for <%= experiment.id %></h1>
-  <h2>Current Experiment Group and Values</h2>
-  <form method="get" action="/experiment/<%= experiment.id %>/edit">
-    <input type="hidden" name="name" value="<%#= experiment.name %>">
-    <input type="submit" value="Edit" />
-  </form>
-  <ul>
-    <li class="experiment">
-      <p><a href="/experiment/<%= experiment.id %>"><%= experiment.name %></a></p>
-      <p>Type: <%= experiment.type %> </p>
-    </li>
-  </ul>
+<h1><%= experiment.name %></h1>
+<a href="/experiment/<%= experiment.id %>/edit">Edit</a>
+<p class="description"><%= experiment.description %></p>
+<h2>Groups</h2>
+<table>
+<thead>
+<tr>
+  <th>Group Name</th>
+  <th>Split %</th>
+  <th># Runs</th>
+  <th>Avg Utility</th>
+</tr>
+</thead>
+<tbody>
+<% for group_name in experiment.groups.keys.sort %>
+<tr>
+  <td><%= group_name %></td>
+  <td><%= experiment.group_split_weights[group_name] %></td>
+  <td><%= experiment.plays[group_name] %></td>
+  <td><%= experiment.utility(group_name).inspect %></td>
+</tr>
+<% end %>
+</tbody>
+</table>
+<p>Utility Function: <%= experiment.utility_function_string %></p>

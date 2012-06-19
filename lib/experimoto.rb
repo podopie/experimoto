@@ -82,7 +82,7 @@ module Experimoto
                     'eid char(22)',
                     'group_name varchar(200)',
                     'key varchar(200)',
-                    'value integer',
+                    'value double',
                     'created_at datetime',
                     'modified_at datetime'
                    ].join(',') + ');')
