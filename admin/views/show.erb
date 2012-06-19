@@ -12,8 +12,9 @@
     <% for experiment in experiments.find_all { |e| !e.is_view? } %>
     <li class="experiment">
       <p><a href="/experiment/<%= experiment.id %>"><%= experiment.name %></a></p>
-      <p><%= experiment.type %> </p>
-      <p><%= experiment.id %> </p>
+      <p>Type: <%= experiment.type %></p>
+      <p>ID: <%= experiment.id %></p>
+      <p>Description: <%= experiment.description %></p>
       <form method="get" action="/experiment/<%= experiment.id %>/edit">
   <input type="hidden" name="name" value="<%= experiment.name %>">
   <input type="submit" value="Edit" />

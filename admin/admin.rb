@@ -21,7 +21,8 @@ end
 post '/new/univariate' do
   name = params[:name]
   type = params[:type]
-  $experimoto.add_new_experiment(:name => name, :type => type)
+  description =  params[:description]
+  $experimoto.add_new_experiment(:name => name, :type => type, :description => description)
   redirect '/experiment'
 end
 
@@ -32,7 +33,8 @@ end
 post '/new/multivariate' do
   name = params[:name]
   type = params[:type]
-  $experimoto.add_new_experiment(:name => name, :type => type)
+  description =  params[:description]
+  $experimoto.add_new_experiment(:name => name, :type => type, :description => description)
   redirect '/experiment'
 end
 
@@ -55,6 +57,10 @@ get '/experiment_create' do
 end
 
 get '/experiment/:id/edit' do
+  erb :edit
+end
+
+post '/experiment/:id/edit' do
   erb :edit
 end
 
