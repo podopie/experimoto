@@ -1,9 +1,9 @@
 <h1>Experiments</h1>
-<button onclick="javascript:document.getElementById('new-experiment-options').style.display='block';" class="btn btn-primary">Create New Experiment</button>
-<div id="new-experiment-options"style="display: none;">
+<a href="#" class="btn btn-primary">Create New Experiment</a>
+<div id="new-experiment-options" class="hidden">
   <a href="./new/univariate">New Univariate Experiment</a><br />
   <a href="./new/multivariate">New Multivariate Experiment</a><br />
-  <a href="#" onclick="document.getElementById('new-experiment-options').style.display='none';" class="btn btn-inverse">cancel</a>
+  <a href="#" class="btn btn-inverse cancel">cancel</a>
 </div>
 <ol>
   <% for experiment in experiments.find_all { |e| !e.is_view? } %>
@@ -21,3 +21,11 @@
   </li>
   <% end %>
 </ol>
+<script>
+$('.btn-primary').click(function(){
+  $('#new-experiment-options').removeClass('hidden');
+})
+$('.cancel').click(function(){
+  $('#new-experiment-options').addClass('hidden');
+})
+</script>

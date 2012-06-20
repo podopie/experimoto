@@ -17,3 +17,6 @@ body { margin: 24px; padding-top: 40px; }
 
 .experiment input {
 }
+.hidden {
+  display: none;
+}
