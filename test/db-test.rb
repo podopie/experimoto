@@ -3,6 +3,32 @@ require File.expand_path(File.join(File.dirname(__FILE__),'..','test','test_help
 
 class TestDB < Test::Unit::TestCase
   
+  def test_invalid_experiment_creation
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    assert_raise ArgumentError do
+      e.experiment_type_to_class('asdf')
+    end
+    assert_raise ArgumentError do
+      e.add_new_experiment(:type => 'fdjkl', :name => 'test')
+    end
+    assert_raise ArgumentError do
+      e.add_new_experiment(:type => 'ABExperiment', :name => 'test', :multivariate => true)
+    end
+    assert_raise ArgumentError do
+      e.add_new_experiment(:type => 'ABExperiment', :name => 'test',
+                           :multivariate => true, :experiments => ['asdf', 'blah'])
+    end
+  end
+  
+  def test_invalid_experiment_saving
+    e = Experimoto::Experimoto.new()
+    assert_raise ArgumentError do
+      e.save_experiment(7)
+    end
+  end
+  
   def test_experiment_deletion
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)

@@ -114,7 +114,7 @@ module Experimoto
       when 'UCB1Experiment' ; UCB1Experiment
       when 'ExperimentView' ; ExperimentView
       else
-        raise 'invalid experiment type'
+        raise ArgumentError, 'invalid experiment type'
       end
     end
     
@@ -199,15 +199,14 @@ module Experimoto
     
     def add_new_experiment(opts)
       raise ArgumentError, 'option hash needs :type' unless opts[:type].kind_of?(String)
-      raise ArgumentError, 'option hash needs :type' unless opts[:name].kind_of?(String)
+      raise ArgumentError, 'option hash needs :name' unless opts[:name].kind_of?(String)
       
       if opts[:multivariate]
-        if opts[:experiments].kind_of?(String)
-          opts[:experiments] = JSON.parse(URI.unescape(opts[:experiments]))
-        end # a hash of names to arrays of group names
+        # a hash of names to arrays of group names
         unless opts[:experiments].kind_of?(Hash)
           raise ArgumentError, 'option hash needs a hash called :experiments, mapping sub-experiment names to arrays of sub-groups, to go with :multivariate'
         end
+        raise ArgumentError, 'need >= 2 sub-experiments' unless opts[:experiments].size >= 2
         groups_list = opts[:experiments].keys.sort.map { |k| opts[:experiments][k] }
         opts[:groups] = groups_list[0].product(*groups_list.drop(1)).map do |l|
           l.each { |k| raise ArgumentError, "#{k}" unless k.kind_of?(String) }
@@ -254,10 +253,10 @@ module Experimoto
       sample
     end
     
-    def rails_track(cookies, key, value=1)
+    def rails_track(cookies, key, value = 1)
       c = {'experimoto_mac' => cookies['experimoto_mac'], 'experimoto_data' => cookies['experimoto_data'] }
       user = self.user_from_cookie(c)
-      track(user, key, value=1)
+      track(user, key, value)
     end
     
     def user_experiment(user, experiment_name, opts = {})

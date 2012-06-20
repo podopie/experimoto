@@ -28,10 +28,7 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     e2.save_experiment(:name => 'test-experiment')
     runs0 = e1.syncing_thread.runs
     waits = 0
-    until e1.syncing_thread.runs > runs0 || waits > 100
-      sleep 0.01
-      waits += 0
-    end
+    sleep 0.2
     assert(e1.experiments['test-experiment'].groups.include?('yet_another_group'))
     
     e1.stop_syncing_thread

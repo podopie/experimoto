@@ -89,9 +89,8 @@ module Experimoto
         end
         expr = expr.gsub(k, "(#{avg})")
       end
-      unless(0 == expr.gsub(/[0-9\+\-\*\/\(\)\. ]/,'').size &&
-             expr.count('(') == expr.count(')'))
-        raise "invalid utility function: `#{expr}`"
+      unless(0 == expr.gsub(/[0-9+\-*\/()\. ]/,'').size && expr.count('(') == expr.count(')'))
+        raise ArgumentError, "invalid utility function: `#{expr}`"
       end
       eval('('+expr+')')
     end
@@ -116,7 +115,7 @@ module Experimoto
       init_event_totals
       
       if opts[:utility_function]
-        @data['utility_function'] = opts[:utility_function]
+        self.utility_function_string = opts[:utility_function]
       end
     end
     

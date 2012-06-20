@@ -28,4 +28,14 @@ class TestUtilityFunctions < Test::Unit::TestCase
     end
     
   end
+  def test_invalid_utility_function
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    
+    x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test-experiment',
+                             :groups => ['0','1','2','3','4'],
+                             :utility_function => '(payment/1000)+ sign_up')
+    assert_raise(ArgumentError) { x.utility('0', '(', dbh) }
+  end
 end

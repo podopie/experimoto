@@ -21,7 +21,7 @@ class TestCookies < Test::Unit::TestCase
     u2 = e.user_from_cookie(c)
     assert_not_equal(u1.id, u2.id)
   end
- 
+  
   def test_new_user
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
@@ -32,7 +32,7 @@ class TestCookies < Test::Unit::TestCase
     assert_equal(u1.id, u2.id)
     assert_equal(u1.groups, u2.groups)
   end
- 
+  
   def test_grouped_user
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
@@ -46,13 +46,19 @@ class TestCookies < Test::Unit::TestCase
     assert_equal(u1.groups['test1'], 'asdf')
     assert_equal(u1.groups.size, 1)
   end
- 
+  
   def test_deprecated_experiment
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    u1 = Experimoto::User.new(:groups => {'test1' => 'asdf'})
+    x = e.add_new_experiment(:name => 'test1', :groups => ['asdf'],
+                             :type => 'ABExperiment')
+    u0 = e.new_user_into_db
+    e.user_experiment(u0, 'test1')
+    c = e.user_to_cookie(u0)
+    u1 = e.user_from_cookie(c)
     c = e.user_to_cookie(u1)
+    e.delete_experiment('test1')
     u2 = e.user_from_cookie(c)
     assert_equal(u1.id, u2.id)
     assert_not_equal(u1.groups, u2.groups)
@@ -61,7 +67,31 @@ class TestCookies < Test::Unit::TestCase
     assert_equal(u2.groups['test1'], nil)
     assert_equal(u2.groups.size, 0)
   end
- 
+  
+  def test_view_experiment
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    x = e.add_new_experiment(:name => 'test1', :groups => ['asdf'],
+                             :type => 'ABExperiment')
+    u0 = e.new_user_into_db
+    e.user_experiment(u0, 'test1')
+    c = e.user_to_cookie(u0)
+    u1 = e.user_from_cookie(c)
+    c = e.user_to_cookie(u1)
+    e.delete_experiment('test1')
+    x = e.add_new_experiment(:name => 'mtest', :type => 'ABExperiment',
+                             :experiments => {'test1' => ['asdf'], 'test2' => ['asdf']},
+                             :multivariate => true)
+    u2 = e.user_from_cookie(c)
+    assert_equal(u1.id, u2.id)
+    assert_not_equal(u1.groups, u2.groups)
+    assert_equal(u1.groups['test1'], 'asdf')
+    assert_equal(u1.groups.size, 1)
+    assert_equal(u2.groups['test1'], nil)
+    assert_equal(u2.groups.size, 0)
+  end
+  
   def test_tester
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
@@ -83,7 +113,7 @@ class TestCookies < Test::Unit::TestCase
     assert_equal(0, x.plays[group])
     assert_equal(0, x.utility(group))
   end
- 
+  
 end
 
 
