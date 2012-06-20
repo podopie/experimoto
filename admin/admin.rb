@@ -58,11 +58,24 @@ get '/new/multivariate' do
 end
 
 post '/new/multivariate' do
-  name = params[:name]
-  type = params[:type]
-  description =  params[:description]
-  $experimoto.add_new_experiment(:name => name, :type => type, :description => description)
-  redirect '/experiment'
+  sub_experiments = {}
+  puts params.inspect
+  1000.times do |i|
+    break unless params["experiment_name_#{i}"]
+    gl = []
+    1000.times do |j|
+      break unless params["group_name_#{i}_#{j}"]
+      gl << params["group_name_#{i}_#{j}"]
+    end
+    sub_experiments[params["experiment_name_#{i}"]] = gl
+  end
+  puts sub_experiments.inspect
+  h = params_to_experiment_hash(params)
+  h.delete(:groups)
+  h.delete(:group_split_weights)
+  h.merge!(:experiments => sub_experiments, :multivariate => true)
+  x = $experimoto.add_new_experiment(h)
+  redirect "/experiment/#{x.id}"
 end
 
 get '/experiment/:id/edit' do
@@ -104,10 +117,9 @@ def params_to_experiment_hash(params)
     weight = nil
     begin
       weight = params["group_weight_#{i}"].to_f
-      weight = nil if weight <= 0.0
     rescue
     end
-    weights[name] = weight if weight
+    weights[name] = weight if weight && weight <= 0.0
   end
   uf = params[:utility_function]
   uf = nil if uf.nil? || uf.size < 1
