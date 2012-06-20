@@ -1,8 +1,6 @@
-require 'rubygems'
-require 'thread'
-require 'rdbi'
-require 'rdbi-driver-sqlite3'
+
 require File.expand_path(File.join(File.dirname(__FILE__),'..','lib','experimoto'))
+require 'rdbi-driver-sqlite3'
 
 db_location = File.expand_path(File.join(File.dirname(__FILE__),'..','test-db.sqlite3'))
 $experimoto = Experimoto::Experimoto.new(:rdbi_args => [:SQLite3, {:database => db_location}])
