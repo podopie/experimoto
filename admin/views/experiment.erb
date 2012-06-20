@@ -25,25 +25,15 @@
   </thead>
   <tbody>
     <% for group_name in experiment.groups.keys.sort %>
-      <tr>
-        <td>
-          <%= group_name %>
-        </td>
-        <td>
-          <%= experiment.group_split_weights[group_name] %>
-        </td>
-        <td>
-          <%= experiment.plays[group_name] %> participants
-        </td>
-        <td>
-          <%= experiment.utility(group_name) * experiment.plays[group_name] %> utils,
-          <%= experiment.utility(group_name) %> average
-        </td>
+      <tr id="<%= group_name %>">
+        <td class="column-name"><%= group_name %></td>
+        <td class="column-splt"><%= experiment.group_split_weights[group_name] %></td>
+        <td class="column-play"><%= experiment.plays[group_name] %> participants</td>
+        <td class="column-util"><%= experiment.utility(group_name) * experiment.plays[group_name] %> utils,
+          <%= experiment.utility(group_name) %> average</td>
         <% for v in experiment.utility_function_variables %>
-          <td>
-            <%= experiment.event_totals[group_name][v] %> total,
-            <%= experiment.event_totals[group_name][v] / (0.001 + experiment.plays[group_name]) %> average
-          </td>
+          <td class="column-totl-<%= v %>"><%= experiment.event_totals[group_name][v] %> total,
+            <%= experiment.event_totals[group_name][v] / (0.001 + experiment.plays[group_name]) %> average</td>
         <% end %>
       </tr>
     <% end %>
@@ -66,13 +56,13 @@
   </thead>
   <tbody>
   <% for ix in @chart_sample_count.times.to_a %>
-    <tr>
-      <td><%= @date_row[ix].to_s %></td>
+    <tr id="time-row-<%= ix %>">
+      <td class="column-time"><%= @date_row[ix].to_s %></td>
       <% for group_name in experiment.groups.keys.sort %>
-      <td><%= @plays_rows[group_name][ix] %></td>
-      <td><%= @utilities_rows[group_name][ix] %></td>
+      <td class="column-play-<%=group_name %>"><%= @plays_rows[group_name][ix] %></td>
+      <td class="column-util-<%=group_name %>"><%= @utilities_rows[group_name][ix] %></td>
       <% if experiment.type =~ /ucb1/i %>
-      <td><%= @confidences_rows[group_name][ix] %></td>
+      <td class="column-conf-<%=group_name %>"><%= @confidences_rows[group_name][ix] %></td>
       <% end %>
       <% end %>
     </tr>
