@@ -105,17 +105,15 @@ get '/experiment/:id' do
     starts = sample_count.times.to_a.map { |i| t0 + (t1-t0)*i }
     ends = sample_count.times.to_a.map { |i| t0 + (t1-t0)*(i+1) }
     @date_row = starts.map { |d| d.to_s }
-    @plays_rows = {}
-    @utilities_rows = {}
-#    @confidences_rows = {} if experiment.type =~ /ucb1/i
     sample_count.times do |i|
       utilities = {}
       plays = {}
       experiment.sync_play_data($experimoto.dbh, :plays => plays,
-                                        :start_date => starts[i], :end_date => ends[i])
+                                :start_date => starts[i], :end_date => ends[i])
       experiment.groups.keys.each do |group_name|
         utilities[group_name] = experiment.utility(group_name, :dbh => $experimoto.dbh,
                                                    :start_date => starts[i], :end_date => ends[i])
+        @utilities_rows ||= {}
         @utilities_rows[group_name] ||= []
         @utilities_rows[group_name] << utilities[group_name]
         @plays_rows ||= {}
@@ -126,7 +124,14 @@ get '/experiment/:id' do
         experiment.groups.keys.each do |group_name|
           @confidences_rows ||= {}
           @confidences_rows[group_name] ||= []
-          @confidences_rows[group_name] << experiment.confidence_bound(group_name, utilities, experiment.plays)
+          cp = {}
+          @plays_rows.each do |k,v|
+            cp[k] ||= 0
+            v.each do |n|
+              cp[k] += n
+            end
+          end
+          @confidences_rows[group_name] << experiment.confidence_bound(group_name, experiment.utilities.values.max, cp)
         end
       end
     end
