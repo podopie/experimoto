@@ -142,7 +142,7 @@ class TestDB < Test::Unit::TestCase
     x2 = e.replace_experiment(x1.to_hash.merge(:type => 'UCB1Experiment'))
     assert_equal('UCB1Experiment', x2.type)
     assert_equal(x1.name, x2.name)
-    assert(x1.groups, x2.groups)
+    assert_equal(x1.groups, x2.groups)
   end
   
   def test_user_experiment

@@ -35,7 +35,7 @@ end
 get '/' do
   experiments = []
   $experimoto.mutex.synchronize do
-    $experimoto._db_sync
+    $experimoto.db_sync(:already_locked => true)
     $experimoto.experiments.keys.sort.each do |k|
       experiments << $experimoto.experiments[k]
     end

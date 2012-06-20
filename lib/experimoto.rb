@@ -118,30 +118,34 @@ module Experimoto
       end
     end
     
-    def db_sync
-      @mutex.synchronize { _db_sync }
-    end
-    def _db_sync
+    def db_sync(opts={})
       generate_tables unless @generated_tables
       
       #acquire experiments
       db_experiments = @dbh.execute('select * from experiments;'
                                     ).to_a.find_all { |row| !row.nil? }.map do |row|
         type = row[1]
-        opts = {:row => row, :dbh => @dbh}
+        exp_opts = {:row => row, :dbh => @dbh}
         
-        experiment_type_to_class(type).new(opts)
+        experiment_type_to_class(type).new(exp_opts)
       end
       
       # TODO: insert any experiments from our config file if they're
       # not already present in db?
       
-      @experiments = {}
-      db_experiments.each do |x|
-        @experiments[x.name] = x
+      set_exps = lambda do
+        @experiments = {}
+        db_experiments.each do |x|
+          @experiments[x.name] = x
+        end
+        @synced = true
       end
       
-      @synced = true
+      if opts[:already_locked]
+        set_exps.call
+      else
+        @mutex.synchronize { set_exps.call }
+      end
     end
     
     def save_experiment(opts)
@@ -190,7 +194,7 @@ module Experimoto
         end
       end
       
-      _db_sync
+      db_sync(:already_locked => true)
     end
     
     def add_new_experiment(opts)
