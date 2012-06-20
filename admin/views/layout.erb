@@ -1,3 +1,13 @@
+<%
+  experiments = []
+  $experimoto.mutex.synchronize do
+    $experimoto.db_sync(:already_locked => true)
+    $experimoto.experiments.keys.sort.each do |k|
+      experiments << $experimoto.experiments[k]
+    end
+  end
+%>
+
 <!doctype html>
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
@@ -14,6 +24,25 @@
       <li><a href="/new/multivariate">Create New Experiment (Multivariate)</a></li>
     </ul>
   </div>
+</div>
+<div class="experiment-nav">
+  <h1>Experiments</h1>
+  <ol>
+  <% for experiment in experiments.find_all { |e| !e.is_view? } %>
+    <li class="experiment">
+      <a href="/experiment/<%= experiment.id %>"><%= experiment.name %></a>
+    </li>
+  <% end %>
+  </ol>
+  <h2>Experiment Views</h2>
+  <ol>
+    <% for view in experiments.find_all { |e| e.is_view? } %>
+    <li class="view">
+      <%= view.name %> <br />
+      View into <%= "#{view.target_experiment_name}#{view.json_lookup_index ? '['+view.json_lookup_index.to_s+']' : ''}" %>
+    </li>
+    <% end %>
+  </ol>
 </div>
 <div class="body">
   <%= yield %>
