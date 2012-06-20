@@ -72,20 +72,39 @@ module Experimoto
       s.scan(/[A-z_][0-9A-z_]*/).uniq.sort
     end
     
-    def utility(group_name, given_utility_function = nil, dbh = nil)
+    def utility(group_name, opts = {})
+      opts = opts.clone
+      given_utility_function = opts.delete(:utility_function)
+      dbh = opts.delete(:dbh)
+      start_date = opts.delete(:start_date)
+      end_date = opts.delete(:end_date)
+      raise ArgumentError unless opts.empty?
+      
       expr = given_utility_function || utility_function_string
-      if given_utility_function
+      plays = @plays
+      event_totals = @event_totals
+      if given_utility_function || start_date || end_date
         raise ArgumentError if dbh.nil?
-        sync_play_data(dbh)
+        raise ArgumentError if start_date && !end_date
+        raise ArgumentError if !start_date && end_date
+        if start_date
+          start_date = start_date.to_s
+          end_date = end_date.to_s
+        end
+        plays = @plays.clone
+        event_totals = @event_totals.clone
+        sync_play_data(dbh, :plays => plays,
+                       :start_date => start_date, :end_date => end_date)
         utility_function_variables(expr).each do |k|
-          sync_event_data(dbh, k)
+          sync_event_data(dbh, k, :event_totals => event_totals,
+                          :start_date => start_date, :end_date => end_date)
         end
       end
       utility_function_variables(expr).each do |k|
-        if 0 == @plays[group_name]
+        if 0 == plays[group_name]
           avg = 0.0
         else
-          avg = (1.0 * (@event_totals[group_name][k])) / @plays[group_name]
+          avg = (1.0 * (event_totals[group_name][k])) / plays[group_name]
         end
         expr = expr.gsub(k, "(#{avg})")
       end
@@ -133,25 +152,45 @@ module Experimoto
       end
     end
     
-    def sync_play_data(dbh)
-      dbh.prepare('select eid, group_name, count(*) from groupings where eid = ? and group_name = ?;') do |sth|
+    def sync_play_data(dbh, opts={})
+      plays = opts[:plays] || @plays
+      sql = 'select eid, group_name, count(*) from groupings where eid = ? and group_name = ?'
+      if opts[:start_date] && opts[:end_date]
+        sql += ' and created_at >= ? and created_at < ?'
+      end
+      dbh.prepare(sql + ';') do |sth|
         self.groups.keys.each do |name|
-          sth.execute(@id, name).each do |row|
+          sql_args = [@id, name]
+          if opts[:start_date] && opts[:end_date]
+            sql_args << opts[:start_date]
+            sql_args << opts[:end_date]
+          end
+          sth.execute(*sql_args).each do |row|
             next if row.nil?
-            @plays[name] = row[2]
+            plays[name] = row[2]
             break
           end
         end
       end
     end
     
-    def sync_event_data(dbh, event_name)
-      dbh.prepare('select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?;') do |sth|
+    def sync_event_data(dbh, event_name, opts={})
+      event_totals = opts[:event_totals] || @event_totals
+      sql = 'select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?'
+      if opts[:start_date] && opts[:end_date]
+        sql += ' and created_at >= ? and created_at < ?'
+      end
+      dbh.prepare(sql + ';') do |sth|
         self.groups.keys.each do |group_name|
-          sth.execute(@id, group_name, event_name).each do |row|
+          sql_args = [@id, group_name, event_name]
+          if opts[:start_date] && opts[:end_date]
+            sql_args << opts[:start_date]
+            sql_args << opts[:end_date]
+          end
+          sth.execute(*sql_args).each do |row|
             next if row.nil?
             val = row[2].nil? ? 0 : row[2]
-            @event_totals[group_name][event_name] = val.to_f
+            event_totals[group_name][event_name] = val.to_f
             break
           end
         end
