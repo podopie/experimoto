@@ -5,7 +5,10 @@ require File.expand_path(File.join(File.dirname(__FILE__),'..','lib','experimoto
 class TestRailsInterface < Test::Unit::TestCase
   
   def test_cookie_passing
-    initialize_experimoto(:db => ":memory:")
+    db_location = File.expand_path(File.join(File.dirname(__FILE__),
+                                             '..','test-db.sqlite3'))
+    initialize_experimoto(:rdbi_args => [:SQLite3, {:database => db_location}])
+    $experimoto.delete_experiment('test')
     $experimoto.add_new_experiment(:name => 'test', :type => 'ABExperiment',
                                    :groups => ['asdf'], :utility_function => 'testkey')
     cookies = {}

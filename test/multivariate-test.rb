@@ -7,19 +7,19 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x = e.add_new_experiment(:name => 'test-experiment', :type => 'UCB1Experiment',
+    x = e.add_new_experiment(:name => 'test_experiment', :type => 'UCB1Experiment',
                              :multivariate => true,
-                             :experiments => { 'test-0' => ['a','b'],
-                               'test-1' => ['c','d'],
-                               'test-2' => ['e','f'],
+                             :experiments => { 'test_0' => ['a','b'],
+                               'test_1' => ['c','d'],
+                               'test_2' => ['e','f'],
                              })
     
     old_seed = srand(123)
     
     u = e.user_from_cookie({})
 
-    e.user_experiment(u, 'test-0')
-    group = u.groups['test-experiment']
+    e.user_experiment(u, 'test_0')
+    group = u.groups['test_experiment']
     assert_equal(1, u.groups.size)
     
     e.track(u, 'success', 1)
@@ -28,7 +28,7 @@ class TestMultivariateExperiments < Test::Unit::TestCase
     
     300.times do
       u = e.user_from_cookie({})
-      g0 = e.user_experiment(u, 'test-0')
+      g0 = e.user_experiment(u, 'test_0')
       e.track(u, 'success', 1) if rand() < (g0 == 'a' ? 0.1 : 0.4)
     end
     

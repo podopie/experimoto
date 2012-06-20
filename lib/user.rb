@@ -17,7 +17,6 @@ module Experimoto
     
     def initialize(opts={})
       if opts[:cookie_hash]
-        puts 'from cookie'
         import_from_cookie(opts[:cookie_hash], opts[:hmac_key], opts[:ignore_hmac])
       else
         @id = opts[:id] || Utils.new_id

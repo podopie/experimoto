@@ -20,6 +20,9 @@ class TestDB < Test::Unit::TestCase
       e.add_new_experiment(:type => 'ABExperiment', :name => 'test',
                            :multivariate => true, :experiments => ['asdf', 'blah'])
     end
+    assert_raise ArgumentError do
+      e.add_new_experiment(:type => 'ABExperiment', :name => 'blah-blah')
+    end
   end
   
   def test_invalid_experiment_saving
@@ -34,34 +37,34 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
-    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2')
-    assert(e.experiments.include?('test-experiment'))
-    assert(e.experiments.include?('test-experiment2'))
-    e.delete_experiment('test-experiment')
-    assert(!e.experiments.include?('test-experiment'))
-    assert(e.experiments.include?('test-experiment2'))
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment')
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment2')
+    assert(e.experiments.include?('test_experiment'))
+    assert(e.experiments.include?('test_experiment2'))
+    e.delete_experiment('test_experiment')
+    assert(!e.experiments.include?('test_experiment'))
+    assert(e.experiments.include?('test_experiment2'))
   end
   
   def test_experiment_view_deletion_cascade
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment', :multivariate => true,
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment', :multivariate => true,
                          :experiments => {'test1' => ['1','2','3'], 'test2' => ['1','2','3'] })
-    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2', :multivariate => true,
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment2', :multivariate => true,
                          :experiments => {'test12' => ['1','2','3'], 'test22' => ['1','2','3'] })
-    assert(e.experiments.include?('test-experiment'))
+    assert(e.experiments.include?('test_experiment'))
     assert(e.experiments.include?('test1'))
     assert(e.experiments.include?('test2'))
-    assert(e.experiments.include?('test-experiment2'))
+    assert(e.experiments.include?('test_experiment2'))
     assert(e.experiments.include?('test12'))
     assert(e.experiments.include?('test22'))
-    e.delete_experiment('test-experiment')
-    assert(!e.experiments.include?('test-experiment'))
+    e.delete_experiment('test_experiment')
+    assert(!e.experiments.include?('test_experiment'))
     assert(!e.experiments.include?('test1'))
     assert(!e.experiments.include?('test2'))
-    assert(e.experiments.include?('test-experiment2'))
+    assert(e.experiments.include?('test_experiment2'))
     assert(e.experiments.include?('test12'))
     assert(e.experiments.include?('test22'))
   end
@@ -74,7 +77,7 @@ class TestDB < Test::Unit::TestCase
     
     assert_equal(0, x.experiments.size)
     
-    e = Experimoto::UCB1Experiment.new(:name => 'test-experiment')
+    e = Experimoto::UCB1Experiment.new(:name => 'test_experiment')
     e_row = e.to_row
     dbh.prepare('insert into experiments values (?,?,?,?,?,?);') do |sth|
       sth.execute(*e_row)
@@ -111,13 +114,13 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment')
     assert_raise SQLite3::ConstraintException do
-      e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+      e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment')
     end
-    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2')
+    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment2')
     assert_raise RuntimeError, SQLite3::ConstraintException do
-      e.replace_experiment(:id => x.id, :type => 'ABExperiment', :name => 'test-experiment')
+      e.replace_experiment(:id => x.id, :type => 'ABExperiment', :name => 'test_experiment')
     end
   end
   
@@ -125,7 +128,7 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment',
+    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
                               :description => 'foo')
     assert_equal('foo', x1.description)
     x2 = e.replace_experiment(x1.to_hash.merge(:description => 'bar'))
@@ -138,7 +141,7 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment',
+    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
                               :groups => ['a','b'], :group_split_weights => {'a' => 4})
     x2 = e.replace_experiment(x1.to_hash.merge(:type => 'UCB1Experiment'))
     assert_equal('UCB1Experiment', x2.type)
@@ -150,7 +153,7 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment',
+    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
                               :groups => ['a','b'], :group_split_weights => {'a' => 4})
     x2 = e.replace_experiment(x1.to_hash.merge(:groups => ['a','b','c']))
     assert_equal(x1.name, x2.name)
@@ -163,7 +166,7 @@ class TestDB < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment',
+    x1 = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
                               :multivariate => true,
                               :experiments => {'a' => ['1','2','3'], 'b' => ['4','5','6']})
     x2 = e.replace_experiment(x1.to_hash.merge(:type => 'UCB1Experiment'))
@@ -177,7 +180,7 @@ class TestDB < Test::Unit::TestCase
     x = Experimoto::Experimoto.new(:dbh => dbh)
     x.db_sync
     assert_equal(0, x.experiments.size)
-    e = Experimoto::UCB1Experiment.new(:name => 'test-experiment')
+    e = Experimoto::UCB1Experiment.new(:name => 'test_experiment')
     e_row = e.to_row
     dbh.prepare('insert into experiments values (?,?,?,?,?,?);') do |sth|
       sth.execute(*e_row)
@@ -201,7 +204,7 @@ class TestDB < Test::Unit::TestCase
     end
     assert_equal([1], db_row)
     
-    x.user_experiment(u, 'test-experiment')
+    x.user_experiment(u, 'test_experiment')
     
     db_row = nil
     dbh.execute('select count(*) from groupings;').to_a.each do |row|
@@ -212,7 +215,7 @@ class TestDB < Test::Unit::TestCase
     
     x.db_sync
     
-    assert_equal(1, x.experiments['test-experiment'].plays['default'])
+    assert_equal(1, x.experiments['test_experiment'].plays['default'])
     
     u2 = x.new_user_into_db
     
@@ -223,7 +226,7 @@ class TestDB < Test::Unit::TestCase
     end
     assert_equal([2], db_row)
     
-    x.user_experiment(u2, 'test-experiment')
+    x.user_experiment(u2, 'test_experiment')
     
     db_row = nil
     dbh.execute('select count(*) from groupings;').to_a.each do |row|
@@ -234,12 +237,12 @@ class TestDB < Test::Unit::TestCase
     
     x.db_sync
     
-    assert_equal(2, x.experiments['test-experiment'].plays['default'])
+    assert_equal(2, x.experiments['test_experiment'].plays['default'])
     
-    x.user_experiment_event(u2, 'test-experiment', 'success', 1)
+    x.user_experiment_event(u2, 'test_experiment', 'success', 1)
     
     x.db_sync
-    assert_equal(0.5, x.experiments['test-experiment'].utility('default'))
+    assert_equal(0.5, x.experiments['test_experiment'].utility('default'))
     
   end
 

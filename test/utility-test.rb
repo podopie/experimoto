@@ -7,14 +7,14 @@ class TestUtilityFunctions < Test::Unit::TestCase
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
     
-    x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test-experiment',
+    x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test_experiment',
                              :groups => ['0','1','2','3','4'],
                              :utility_function => '(payment/1000)+ sign_up')
     
     choices = [0,0,0,0,0]
     100.times do |ix|
       u = e.new_user_into_db
-      sample = e.user_experiment(u, 'test-experiment')
+      sample = e.user_experiment(u, 'test_experiment')
       e.track(u, 'sign_up') if sample.to_i < 4
       e.track(u, 'payment', 500) if sample.to_i < 3
       e.track(u, 'payment', 300) if sample.to_i < 2
@@ -33,7 +33,7 @@ class TestUtilityFunctions < Test::Unit::TestCase
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
     
-    x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test-experiment',
+    x = e.add_new_experiment(:type => 'UCB1Experiment', :name => 'test_experiment',
                              :groups => ['0','1','2','3','4'],
                              :utility_function => '(payment/1000)+ sign_up')
     assert_raise(ArgumentError) { x.utility('0', '(', dbh) }

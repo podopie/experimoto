@@ -210,6 +210,7 @@ module Experimoto
     def add_new_experiment(opts)
       raise ArgumentError, 'option hash needs :type' unless opts[:type].kind_of?(String)
       raise ArgumentError, 'option hash needs :name' unless opts[:name].kind_of?(String)
+      raise ArgumentError, 'experiment names need to match /\A[A-z0-9_]+\z/' unless opts[:name] =~ /\A[A-z0-9_]+\z/
       
       if opts[:multivariate]
         # a hash of names to arrays of group names
@@ -249,7 +250,8 @@ module Experimoto
     
     def replace_experiment(opts)
       raise ArgumentError, 'option hash needs :type' unless opts[:type].kind_of?(String)
-      raise ArgumentError, 'option hash needs :type' unless opts[:name].kind_of?(String)
+      raise ArgumentError, 'option hash needs :name' unless opts[:name].kind_of?(String)
+      raise ArgumentError, 'experiment names need to match /\A[A-z0-9_]+\z/' unless opts[:name] =~ /\A[A-z0-9_]+\z/
       exp = experiment_type_to_class(opts[:type]).new(opts)
       save_experiment(:experiment => exp)
     end

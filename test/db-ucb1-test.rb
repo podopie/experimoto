@@ -11,7 +11,7 @@ class TestDBAndUCB1Experiment < Test::Unit::TestCase
     counts = num_groups.times.map { 0 }
     successes = num_groups.times.map { 0 }
     
-    e = x.add_new_experiment(:type => 'UCB1Experiment', :name => 'test-experiment',
+    e = x.add_new_experiment(:type => 'UCB1Experiment', :name => 'test_experiment',
                              :groups => num_groups.times.to_a.map { |i| i.to_s })
     
     old_seed = srand(123)
@@ -19,11 +19,11 @@ class TestDBAndUCB1Experiment < Test::Unit::TestCase
     num_samples = 1000
     num_samples.times do |ix|
       u = x.new_user_into_db
-      sample = x.user_experiment(u, 'test-experiment')
+      sample = x.user_experiment(u, 'test_experiment')
       counts[sample.to_i] += 1
       if rand() < (sample.to_i + 1.0)/(30.0)
         if 0 == ix % 2
-          x.user_experiment_event(u, 'test-experiment', 'success', 1)
+          x.user_experiment_event(u, 'test_experiment', 'success', 1)
         else
           x.track(u, 'success')
         end
@@ -37,7 +37,7 @@ class TestDBAndUCB1Experiment < Test::Unit::TestCase
           expected_utility = (1.0*successes[i])/counts[i]
         end
         assert((expected_utility -
-                x.experiments['test-experiment'].utility(i.to_s)).abs < 0.01)
+                x.experiments['test_experiment'].utility(i.to_s)).abs < 0.01)
       end
     end
     

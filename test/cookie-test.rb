@@ -96,20 +96,20 @@ class TestCookies < Test::Unit::TestCase
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     e.db_sync
-    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
+    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment')
     u1 = e.new_user_into_db(:is_tester => true)
     assert(u1.tester?)
     c = e.user_to_cookie(u1)
     u2 = e.user_from_cookie(c)
     assert(u2.tester?)
-    group = e.user_experiment(u2, 'test-experiment')
+    group = e.user_experiment(u2, 'test_experiment')
     assert_not_equal(nil, group)
-    assert_equal(u2.groups['test-experiment'], group)
+    assert_equal(u2.groups['test_experiment'], group)
     assert_equal(0, x.plays[group])
     e.track(u2, 'success')
     assert_equal(0, x.utility(group))
     e.db_sync
-    x = e.experiments['test-experiment']
+    x = e.experiments['test_experiment']
     assert_equal(0, x.plays[group])
     assert_equal(0, x.utility(group))
   end
