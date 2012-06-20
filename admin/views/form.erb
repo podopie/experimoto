@@ -1,6 +1,8 @@
 <form method="post" class="experiment-form">
   <%= csrf_tag %>
-  <input type="hidden" id="experiment_id" name="experiment_id" value="<%= @experiment.id %>" />
+  <% if @experiment %>
+    <input type="hidden" id="experiment_id" name="experiment_id" value="<%= @experiment.id %>" />
+  <% end %>
   <ul>
     <li>
       <label for="experiment_name">Experiment Name:</label>
