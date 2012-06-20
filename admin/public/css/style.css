@@ -39,3 +39,21 @@ body { margin: 24px; padding-top: 40px; }
   width: 280px;
   margin-right: 10px;
 }
+.ABExperiment {
+  background: #6C6;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0px;
+  display: inline-block;
+}
+.UCB1Experiment {
+  background: #66C;
+  color: white;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0px;
+  display: inline-block;
+}

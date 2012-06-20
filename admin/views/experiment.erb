@@ -1,49 +1,55 @@
-<h1>Experiment: <%= experiment.name %></h1>
-<a href="/experiment/<%= experiment.id %>/edit" class="btn btn-primary">Edit Experiment</a>
-<a href="/experiment/<%= experiment.id %>/delete" class="btn btn-danger">Delete Experiment</a>
-<p class="description">Description: <%= experiment.description %></p>
-<p>Type: <%= experiment.type %></p>
-<p>Utility Function: <%= experiment.utility_function_string %></p>
+<div class="hero-unit">
+  <h1>
+    <%= experiment.name %>
+  </h1>
+  <span class="<%= experiment.type%>"><%= experiment.type%></span>
+  <p class="description"><%= experiment.description %></p>
+</div>
+  <p>
+    <a href="/experiment/<%= experiment.id %>/edit" class="btn btn-primary">Edit Experiment</a>
+    <a href="/experiment/<%= experiment.id %>/delete" class="btn btn-danger">Delete Experiment</a>
+  </p>
+  <p>Utility Function: <%= experiment.utility_function_string %></p>
 <h2>Groups</h2>
-<table>
-<thead>
-<tr>
-  <th>Group Name</th>
-  <th>Split %</th>
-  <th># Runs</th>
-  <th>Avg Utility</th>
-  <% for v in experiment.utility_function_variables %>
-    <th><%= v %></th>
-  <% end %>
-</tr>
-</thead>
-<tbody>
-<% for group_name in experiment.groups.keys.sort %>
-<tr>
-  <td style="text-align:  left; border: 1px solid black;">
-    <%= group_name %>
-  </td>
-  <td style="text-align: right; border: 1px solid black;">
-    <%= experiment.group_split_weights[group_name] %>
-  </td>
-  <td style="text-align: right; border: 1px solid black;">
-    <%= experiment.plays[group_name] %> participants
-  </td>
-  <td style="text-align: right; border: 1px solid black;">
-    <%= experiment.utility(group_name).inspect %> utils
-  </td>
-  <% for v in experiment.utility_function_variables %>
-    <td style="text-align: right; border: 1px solid black;">
-      <%= experiment.event_totals[group_name][v] %> total
-    </td>
-  <% end %>
-</tr>
-<% end %>
-</tbody>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Group Name</th>
+      <th>Split %</th>
+      <th># Runs</th>
+      <th>Avg Utility</th>
+      <% for v in experiment.utility_function_variables %>
+        <th><%= v %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% for group_name in experiment.groups.keys.sort %>
+      <tr>
+        <td>
+          <%= group_name %>
+        </td>
+        <td>
+          <%= experiment.group_split_weights[group_name] %>
+        </td>
+        <td>
+          <%= experiment.plays[group_name] %> participants
+        </td>
+        <td>
+          <%= experiment.utility(group_name).inspect %> utils
+        </td>
+        <% for v in experiment.utility_function_variables %>
+          <td>
+            <%= experiment.event_totals[group_name][v] %> total
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
 <% if @has_chart_info %>
-<table id="time_chart_info">
+<table id="time_chart_info" class="table table-bordered">
   <thead>
     <tr>
       <th>dates</th>
