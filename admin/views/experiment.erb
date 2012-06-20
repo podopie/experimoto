@@ -77,15 +77,24 @@
   <% end %>
   </tbody>
 </table>
+<h3>Sign ups for each group</h3>
 <% end %>
 
 <script>
-var stats = {};
+var data = []
+<% row = 0 %>
 <% for group_name in experiment.groups.keys.sort %>
   <% for v in experiment.utility_function_variables %>
-  stats['<%= group_name %>'] = <%= experiment.event_totals[group_name][v] %>
+  data[<%= row %>] = <%= experiment.event_totals[group_name][v] %>
+  <% row = row + 1 %>
   <% end %>
 <% end %>
-console.log(stats)
-
+console.log(data)
+var chart = d3.select(".body").append("div")
+    .attr("class", "chart");
+chart.selectAll("div")
+    .data(data)
+  .enter().append("div")
+    .style("width", function(d) { return d * 10 + "px"; })
+    .text(function(d) { return d; });
 </script>

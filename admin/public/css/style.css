@@ -57,3 +57,12 @@ body { margin: 24px; padding-top: 40px; }
   margin: 10px 0px;
   display: inline-block;
 }
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 3px;
+  margin: 1px;
+  color: white;
+}
