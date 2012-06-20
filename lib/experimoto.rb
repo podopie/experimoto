@@ -31,10 +31,17 @@ module Experimoto
       @experiments = {} # mapping experiment id to experiment
       @hmac_key = '' # TODO: configuration
       @dbh = opts[:dbh]
+      @rdbi_args = opts[:rdbi_args]
+      raise ArgumentError unless @dbh || @rdbi_args
       @generated_tables = false
       @synced = false
       @mutex = Mutex.new
       @syncing_thread = nil
+    end
+    
+    def dbh
+      return @dbh if @dbh
+      RDBI.connect(*@rdbi_args)
     end
     
     def start_syncing_thread(opts={})
@@ -55,7 +62,7 @@ module Experimoto
     end
     
     def generate_tables
-      @dbh.execute('create table if not exists experiments (' +
+      dbh.execute('create table if not exists experiments (' +
                    ['id char(22) primary key',
                     'type varchar(100)',
                     'name varchar(200)',
@@ -63,12 +70,12 @@ module Experimoto
                     'modified_at datetime',
                     'data text'
                    ].join(',') + ');')
-      @dbh.execute('create table if not exists users (' +
+      dbh.execute('create table if not exists users (' +
                    ['id char(22) primary key',
                     'created_at datetime',
                     'modified_at datetime'
                    ].join(',') + ');')
-      @dbh.execute('create table if not exists groupings (' +
+      dbh.execute('create table if not exists groupings (' +
                    ['id integer primary key autoincrement',
                     'uid char(22)',
                     'eid char(22)',
@@ -76,7 +83,7 @@ module Experimoto
                     'created_at datetime',
                     'modified_at datetime'
                    ].join(',') + ');')
-      @dbh.execute('create table if not exists events (' +
+      dbh.execute('create table if not exists events (' +
                    ['id integer primary key autoincrement',
                     'uid char(22)',
                     'eid char(22)',
@@ -99,7 +106,7 @@ module Experimoto
                 ]
       indexes.each do |ix|
         begin
-          @dbh.execute(ix)
+          dbh.execute(ix)
         rescue SQLite3::SQLException
           # NOTE: mysql might not support create index if not exists,
           # so just gonna have to rescue a lot of exceptions.
@@ -122,10 +129,10 @@ module Experimoto
       generate_tables unless @generated_tables
       
       #acquire experiments
-      db_experiments = @dbh.execute('select * from experiments;'
-                                    ).to_a.find_all { |row| !row.nil? }.map do |row|
+      db_experiments = dbh.execute('select * from experiments;'
+                                   ).to_a.find_all { |row| !row.nil? }.map do |row|
         type = row[1]
-        exp_opts = {:row => row, :dbh => @dbh}
+        exp_opts = {:row => row, :dbh => dbh}
         
         experiment_type_to_class(type).new(exp_opts)
       end
@@ -159,7 +166,7 @@ module Experimoto
         raise ArgumentError
       end
       
-      @dbh.prepare('update experiments set type = ?, name = ?, modified_at = ?, data = ? where id = ?;') do |sth|
+      dbh.prepare('update experiments set type = ?, name = ?, modified_at = ?, data = ? where id = ?;') do |sth|
         row0 = experiment.to_row
         row = row0.clone
         row.delete_at(0)
@@ -191,7 +198,7 @@ module Experimoto
         n1 = to_delete.size
       end
       
-      @dbh.prepare('delete from experiments where name = ?') do |sth|
+      dbh.prepare('delete from experiments where name = ?') do |sth|
         to_delete.to_a.each do |name|
           sth.execute(name)
         end
@@ -221,7 +228,7 @@ module Experimoto
       end
       
       exp = experiment_type_to_class(opts[:type]).new(opts)
-      @dbh.prepare('insert into experiments values (?,?,?,?,?,?);') do |sth|
+      dbh.prepare('insert into experiments values (?,?,?,?,?,?);') do |sth|
         sth.execute(*exp.to_row)
       end
       
@@ -289,7 +296,7 @@ module Experimoto
       group_name = experiment.sample(:no_record => user.tester?)
       user.groups[experiment_name] = group_name
       unless user.tester?
-        @dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
+        dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, DateTime.now.to_s, DateTime.now.to_s)
         end
       end
@@ -314,7 +321,7 @@ module Experimoto
       
       group_name = _user_experiment(user, experiment_name)
       unless user.tester?
-        @dbh.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
+        dbh.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, key, value,
                       DateTime.now.to_s, DateTime.now.to_s)
         end
@@ -342,7 +349,7 @@ module Experimoto
     end
     
     def write_user_to_db(user)
-      @dbh.prepare('insert into users values (?,?,?)') do |sth|
+      dbh.prepare('insert into users values (?,?,?)') do |sth|
         sth.execute(*user.to_row)
       end
     end

@@ -23,7 +23,8 @@ class TestDB < Test::Unit::TestCase
   end
   
   def test_invalid_experiment_saving
-    e = Experimoto::Experimoto.new()
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
     assert_raise ArgumentError do
       e.save_experiment(7)
     end
