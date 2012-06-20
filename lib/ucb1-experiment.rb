@@ -13,8 +13,6 @@ module Experimoto
     end
     
     def confidence_bound(group_name, utilities, plays)
-      total_plays = plays.values.inject(0) { |a, b| a + b }
-      
       conf_bound_min = 0.1
       conf_bound_mult = 2.0 * utilities.values.max
       if conf_bound_mult <= conf_bound_min
@@ -30,7 +28,6 @@ module Experimoto
       if untried.size > 0
         return untried[rand(untried.size)]
       end
-      
       
       utilities = {}
       self.groups.keys.map do |name|

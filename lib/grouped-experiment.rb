@@ -30,6 +30,11 @@ module Experimoto
       self.group_split_weights.merge!(opts[:group_split_weights]) if opts[:group_split_weights]
     end
     
+    def total_plays(plays=nil)
+      plays ||= @plays
+      plays.values.inject(0) { |a, b| a + b }
+    end
+    
     def group_split_weights
       @data['group_split_weights']
     end

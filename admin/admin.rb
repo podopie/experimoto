@@ -94,6 +94,42 @@ get '/experiment/:id' do
   $experimoto.db_sync
   puts "id: #{params[:id]}"
   experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  if experiment.total_plays > 100
+    #let's make a graph!
+    sample_count = 10
+    t0 = DateTime.parse(experiment.created_at)
+    t1 = DateTime.now
+    starts = sample_count.times.to_a.map { |i| t0 + (t1-t0)*i }
+    ends = sample_count.times.to_a.map { |i| t0 + (t1-t0)*(i+1) }
+    @date_row = starts.map { |d| d.to_s }
+    @plays_rows = {}
+    @utilities_rows = {}
+    @confidences_rows = {} if experiment.type =~ /ucb1/i
+    sample_count.times do |i|
+      utilities = {}
+      plays = {}
+      experiment.sync_play_data($experimoto.dbh, :plays => plays,
+                                        :start_date => starts[i], :end_date => ends[i])
+      experiment.groups.keys.each do |group_name|
+        utilities[group_name] = experiment.utility(group_name, :dbh => $experimoto.dbh,
+                                                   :start_date => starts[i], :end_date => ends[i])
+        @utilities_rows[group_name] ||= []
+        @utilities_rows[group_name] << utilities[group_name]
+        @plays_rows[group_name] ||= []
+        @plays_rows[group_name] << plays[group_name]
+        if experiment.type =~ /ucb1/i
+          @confidence_rows[group_name] ||= []
+          @confidence_rows[group_name] << experiment.confidence_bound(group_name, utilities, plays)
+        end
+      end
+      if experiment.type =~ /ucb1/i
+        experiment.groups.keys.each do |group_name|
+          @confidence_rows[group_name] ||= []
+          @confidence_rows[group_name] << experiment.confidence_bound(group_name, utilities, plays)
+        end
+      end
+    end
+  end
   puts "experiment: #{experiment.inspect}"
   erb :experiment, :locals => {:experiment => experiment}
 end
