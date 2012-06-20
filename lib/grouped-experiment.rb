@@ -30,6 +30,11 @@ module Experimoto
       self.group_split_weights.merge!(opts[:group_split_weights]) if opts[:group_split_weights]
     end
     
+    def total_plays(plays=nil)
+      plays ||= @plays
+      plays.values.inject(0) { |a, b| a + b }
+    end
+    
     def group_split_weights
       @data['group_split_weights']
     end
@@ -91,8 +96,13 @@ module Experimoto
           start_date = start_date.to_s
           end_date = end_date.to_s
         end
-        plays = @plays.clone
-        event_totals = @event_totals.clone
+        plays = {}
+        event_totals = {}
+        self.groups.keys.each do |name|
+          event_totals[name] = {}
+          event_totals[name].default = 0
+        end
+
         sync_play_data(dbh, :plays => plays,
                        :start_date => start_date, :end_date => end_date)
         utility_function_variables(expr).each do |k|
@@ -162,8 +172,8 @@ module Experimoto
         self.groups.keys.each do |name|
           sql_args = [@id, name]
           if opts[:start_date] && opts[:end_date]
-            sql_args << opts[:start_date]
-            sql_args << opts[:end_date]
+            sql_args << opts[:start_date].to_s
+            sql_args << opts[:end_date].to_s
           end
           sth.execute(*sql_args).each do |row|
             next if row.nil?

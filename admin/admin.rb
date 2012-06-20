@@ -94,6 +94,48 @@ get '/experiment/:id' do
   $experimoto.db_sync
   puts "id: #{params[:id]}"
   experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  if experiment.total_plays > 0 # 100
+    #let's make a graph!
+    @has_chart_info = true
+    sample_count = 10
+    @chart_sample_count = sample_count
+    t0 = DateTime.parse(experiment.created_at) if experiment.created_at
+    t0 ||= DateTime.now - 10
+    t1 = DateTime.now
+    starts = sample_count.times.to_a.map { |i| t0 + (t1-t0)*i }
+    ends = sample_count.times.to_a.map { |i| t0 + (t1-t0)*(i+1) }
+    @date_row = starts.map { |d| d.to_s }
+    sample_count.times do |i|
+      utilities = {}
+      plays = {}
+      experiment.sync_play_data($experimoto.dbh, :plays => plays,
+                                :start_date => starts[i], :end_date => ends[i])
+      experiment.groups.keys.each do |group_name|
+        utilities[group_name] = experiment.utility(group_name, :dbh => $experimoto.dbh,
+                                                   :start_date => starts[i], :end_date => ends[i])
+        @utilities_rows ||= {}
+        @utilities_rows[group_name] ||= []
+        @utilities_rows[group_name] << utilities[group_name]
+        @plays_rows ||= {}
+        @plays_rows[group_name] ||= []
+        @plays_rows[group_name] << plays[group_name]
+      end
+      if experiment.type =~ /ucb1/i
+        experiment.groups.keys.each do |group_name|
+          @confidences_rows ||= {}
+          @confidences_rows[group_name] ||= []
+          cp = {}
+          @plays_rows.each do |k,v|
+            cp[k] ||= 0
+            v.each do |n|
+              cp[k] += n
+            end
+          end
+          @confidences_rows[group_name] << experiment.confidence_bound(group_name, experiment.utilities.values.max, cp)
+        end
+      end
+    end
+  end
   puts "experiment: #{experiment.inspect}"
   erb :experiment, :locals => {:experiment => experiment}
 end

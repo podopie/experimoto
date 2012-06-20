@@ -12,16 +12,22 @@ module Experimoto
       @type = 'UCB1Experiment'
     end
     
-    def confidence_bound(group_name, utilities, plays)
-      total_plays = plays.values.inject(0) { |a, b| a + b }
-      
+    def confidence_bound(group_name, utility_max, plays)
       conf_bound_min = 0.1
-      conf_bound_mult = 2.0 * utilities.values.max
+      conf_bound_mult = 2.0 * utility_max
       if conf_bound_mult <= conf_bound_min
         conf_bound_mult = conf_bound_min
       end
       
       conf_bound_mult * Math.sqrt(2.0 * Math.log(total_plays) / plays[group_name])
+    end
+    
+    def utilities
+      tmp = {}
+      self.groups.keys.map do |name|
+        tmp[name] = utility(name)
+      end
+      tmp
     end
     
     # following http://www.chrisstucchio.com/blog/2012/bandit_algorithms_vs_ab.html
@@ -31,15 +37,9 @@ module Experimoto
         return untried[rand(untried.size)]
       end
       
-      
-      utilities = {}
-      self.groups.keys.map do |name|
-        utilities[name] = utility(name)
-      end
-      
       self.groups.keys.sort.map do |name|
         avg = utilities[name]
-        best = avg + confidence_bound(name, utilities, @plays)
+        best = avg + confidence_bound(name, utilities.values.max, @plays)
         [name, best]
       end.max { |a, b| a[1] <=> b[1] }[0]
     end
