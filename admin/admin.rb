@@ -80,7 +80,7 @@ end
 
 get '/experiment/:id/edit' do
   @experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
-  erb :edit #, :locals => {:experiment => experiment}
+  erb :edit_univariate #, :locals => {:experiment => experiment}
 end
 
 post '/experiment/:id/edit' do
