@@ -25,8 +25,8 @@ class TestUCB1Experiment < Test::Unit::TestCase
       end
     end
     
-    assert([214, 357, 429] == counts || [228, 309, 463] == counts,
-           "incorrect counts: #{counts.inspect}")
+    assert(counts[0] < counts[1])
+    assert(counts[1] < counts[2])
     
     # adding a new, superior group
     counts << 0
@@ -40,8 +40,9 @@ class TestUCB1Experiment < Test::Unit::TestCase
       end
     end
     
-    assert([244, 344, 473, 939] == counts || [229, 378, 459, 934] == counts,
-           "incorrect counts: #{counts.inspect}")
+    assert(counts[0] < counts[1])
+    assert(counts[1] < counts[2])
+    assert(counts[2] < counts[3])
   ensure
     srand(old_seed)
   end
