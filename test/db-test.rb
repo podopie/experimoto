@@ -244,6 +244,20 @@ class TestDB < Test::Unit::TestCase
     x.db_sync
     assert_equal(0.5, x.experiments['test_experiment'].utility('default'))
     
+    u = x.new_user_into_db
+    orig_date = u.modified_at
+    sleep 2
+    
+    x.user_experiment(u, 'test_experiment')
+    new_date = u.modified_at
+    assert(new_date > orig_date)
+    dbh.prepare('select modified_at from users where id = ?;') do |sth|
+      sth.execute(u.id).each do |o|
+        next if o.nil?
+        assert(o[0] > orig_date)
+      end
+    end
+
   end
 
  

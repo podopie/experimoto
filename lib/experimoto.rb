@@ -301,6 +301,10 @@ module Experimoto
         dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, DateTime.now.to_s, DateTime.now.to_s)
         end
+        user.modified_at = DateTime.now.to_s
+        dbh.prepare('update users set modified_at = ? where id = ? and modified_at < ?') do |sth|
+          sth.execute(user.modified_at, user.id, user.modified_at)
+        end
       end
       
       group_name
