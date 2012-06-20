@@ -18,14 +18,14 @@ class TestDBABExperiment < Test::Unit::TestCase
     e.add_new_experiment(:type => 'ABExperiment', :name => 'test', :groups => ['0','1','2'])
     counts = [0,0,0]
     
-    num_samples = 100
+    num_samples = 300
     num_samples.times do
       sample = e.user_experiment(e.new_user_into_db, 'test')
       counts[sample.to_i] += 1
     end
     assert_not_equal(counts.min, 0)
     assert_not_equal(counts.max, num_samples)
-    assert(num_samples/4.0 > counts.max - counts.min)
+    assert(num_samples/6.0 > counts.max - counts.min)
   end
   
   def test_weights

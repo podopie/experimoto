@@ -21,9 +21,18 @@ module Experimoto
       
       total_plays = @plays.values.inject(0) { |a, b| a + b }
       
+      utilities = {}
+      self.groups.keys.map do |name|
+        utilities[name] = utility(name)
+      end
+      conf_bound_mult = 2.0 * utilities.values.max
+      if conf_bound_mult <= 1.0
+        conf_bound_mult = 1.0
+      end
+      
       result = self.groups.keys.map do |name|
-        avg = utility(name)
-        confidence_bound = Math.sqrt(2.0 * Math.log(total_plays) / @plays[name])
+        avg = utilities[name]
+        confidence_bound = conf_bound_mult * Math.sqrt(2.0 * Math.log(total_plays) / @plays[name])
         best = avg + confidence_bound
         [name, best]
       end.max { |a, b| a[1] <=> b[1] }[0]

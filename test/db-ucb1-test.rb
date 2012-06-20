@@ -41,8 +41,8 @@ class TestDBAndUCB1Experiment < Test::Unit::TestCase
       end
     end
     
-    assert([214, 357, 429] == counts || [228, 309, 463] == counts,
-           "incorrect counts: #{counts.inspect}")
+    assert(counts[0] < counts[1])
+    assert(counts[1] < counts[2])
   ensure
     begin
       srand(old_seed)
