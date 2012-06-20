@@ -1,9 +1,9 @@
 <h1>Experiments</h1>
-<button onclick="javascript:document.getElementById('new-experiment-options').style.display='block';">Create New Experiment</button>
-<div id="new-experiment-options" style="display: none;">
+<button onclick="javascript:document.getElementById('new-experiment-options').style.display='block';" class="btn btn-primary">Create New Experiment</button>
+<div id="new-experiment-options"style="display: none;">
   <a href="./new/univariate">New Univariate Experiment</a><br />
   <a href="./new/multivariate">New Multivariate Experiment</a><br />
-  <a href="#" onclick="document.getElementById('new-experiment-options').style.display='none';">cancel</a>
+  <a href="#" onclick="document.getElementById('new-experiment-options').style.display='none';" class="btn btn-inverse">cancel</a>
 </div>
 <ol>
   <% for experiment in experiments.find_all { |e| !e.is_view? } %>
@@ -11,7 +11,7 @@
     <a href="/experiment/<%= experiment.id %>"><%= experiment.name %></a>
     <form method="get" action="/experiment/<%= experiment.id %>/edit">
       <input type="hidden" name="name" value="<%= experiment.name %>">
-      <input type="submit" value="Edit" />
+      <input type="submit" class="btn" value="Edit" />
     </form>
   </li>
   <% end %>
