@@ -11,11 +11,11 @@ require File.expand_path(File.join(File.dirname(__FILE__),'utils'))
 
 
 module Experimoto
-  
+
   class Experiment
-    
+
     attr_accessor :id, :type, :name, :data, :created_at, :modified_at
-    
+
     def initialize(opts={})
       if opts.include?(:row)
         row = opts[:row]
@@ -33,44 +33,44 @@ module Experimoto
         @data['description'] = opts[:description] if opts[:description]
       end
     end
-    
+
     def description
       @data['description'] || ''
     end
     def description=x
       @data['description'] = x
     end
-    
+
     def store_in_cookie?
       true
     end
-    
+
     def is_view?
       false
     end
-    
+
     def track?
       true
     end
-    
+
     def sample
       'default'
     end
-    
+
     def local_event(opts={})
     end
-    
+
     def to_row
       # TODO: need to figure out if the dates are datetimes :/
       [@id, @type, @name, @created_at, @modified_at, JSON.unparse(@data)]
     end
-    
+
     def to_hash
       { :id => @id, :type => @type, :name => @name,
         :created_at => @created_at, :modified_at => @modified_at,
         :data => @data }
     end
-    
+
   end
-  
+
 end
