@@ -1,6 +1,6 @@
-<h1><%= experiment.name %></h1>
-<a href="/experiment/<%= experiment.id %>/edit">Edit</a>
-<a href="/experiment/<%= experiment.id %>/delete">Delete</a>
+<h1>Experiment: <%= experiment.name %></h1>
+<a href="/experiment/<%= experiment.id %>/edit" class="btn btn-primary">Edit Experiment</a>
+<a href="/experiment/<%= experiment.id %>/delete" class="btn btn-danger">Delete Experiment</a>
 <p class="description">Description: <%= experiment.description %></p>
 <p>Type: <%= experiment.type %></p>
 <p>Utility Function: <%= experiment.utility_function_string %></p>
