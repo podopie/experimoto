@@ -54,7 +54,7 @@ module Experimoto
     end
     
     def sample
-      ExperimentGroup.new(:name => 'default')
+      'default'
     end
     
     def local_event(opts={})
