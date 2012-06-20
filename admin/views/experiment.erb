@@ -89,7 +89,12 @@ var data = []
   <% row = row + 1 %>
   <% end %>
 <% end %>
-var x = d3.scale.linear()
+
+// D3 Chart stuff
+
+// If you're only looking at one metric, graphing is easy...
+if (data.length == <%= experiment.groups.length %>) {
+  var x = d3.scale.linear()
     .domain([0, d3.max(data)])
     .range(["0px", "710px"]);
 console.log(data)
@@ -100,4 +105,6 @@ chart.selectAll("div")
   .enter().append("div")
     .style("width", x)
     .text(String);
+}
+
 </script>
