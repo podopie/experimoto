@@ -16,10 +16,10 @@ opposed to just one. </p>
     </li>
     <li>
       Experiment Type:<br />
-      <label for="type1">
-        <input type="radio" name="type" id="typeAB" value="ABExperiment" />A/B Test
+      <label for="typeAB">
+        <input type="radio" name="type" id="typeAB" value="ABExperiment" checked="checked"/>A/B Test
       </label>
-      <label for="type2">
+      <label for="typeUCB1">
         <input type="radio" name="type" id="typeUCB1" value="UCB1Experiment" />UCB Experiment
       </label>
     </li>
@@ -28,19 +28,20 @@ opposed to just one. </p>
       <input type="text" id="utility_function" name="utility_function" />
     </li>
     <li>
-      Sub-Experiments
-      <ol id="sub_experiment_list">
-      </ol>
+      <h2>Sub-Experiments</h2>
+      <div id="sub_experiment_list">
+      </div>
       <button type="button" class="add-sub-experiment btn">Add Sub-Experiment</button>
     </li>
   </ul>
-<button type="submit" value="send" class="btn btn-primary">Submit!</button>
+<button type="submit" value="send" class="btn btn-primary">Submit experiment</button>
 </form>
 
 <script>
 function add_sub_experiment() {
   var n = $('.sub_experiment').length;
   var s = '';
+  s += '<div class="sub_exp">';
   s += '<li id="sub_experiment_'+n+'" class="sub_experiment">';
   s += '<label for="experiment_name_'+n+'">Sub-Experiment Name:</label>';
   s += '<input type="text" id="experiment_name_'+n+'" name="experiment_name_'+n+'">';
@@ -55,8 +56,10 @@ function add_sub_experiment() {
   s += '<tbody id="groups_table_tbody_'+n+'">';
   s += '</tbody>';
   s += '</table>';
-  s += '<button type="button" class="add_group_'+n+' btn">Add</button>';
+  s += '<button type="button" class="add_group_'+n+' btn">Add group</button>';
+  s += '<p class="warning warning'+n+' hidden">You need at least one group for your experiment!';
   s += '</li>';
+  s += '</div>';
   var tmp = document.createElement('ol');
   tmp.innerHTML = s;
   var elements = tmp.childNodes;
@@ -72,14 +75,15 @@ function add_sub_experiment() {
 }
 
 function add_group(m) {
+  $('.warning').addClass('hidden');
   var n = document.getElementsByClassName('group_'+m).length;
   var s = '';
   s += '<tr class="group_'+m+'" id="group_tr_'+m+'_'+n+'">';
   s += '<td>';
   s += '<input type="text" id="group_name_'+m+'_'+n+'" name="group_name_'+m+'_'+n+'" />'
   s += '</td>';
-  s += '<td>';
-  s += '<button type="button" class="deleteGroup btn btn-danger" onclick="javascript:delete_group('+m+','+n+')">Delete</button>';
+  s += '<td class="table-btn">';
+  s += '<button type="button" class="deleteGroup btn btn-danger" onclick="javascript:delete_group('+m+','+n+')">Delete group</button>';
   s += '</td>';
   s += '</tr>';
   var tmp = document.createElement('tbody');
@@ -91,8 +95,11 @@ function add_group(m) {
   }
 }
 function delete_group(m, i) {
+  $('.warning').addClass('hidden');
   n = document.getElementsByClassName('group_'+m).length;
-  if (n === 1) { alert('need at least one group') }
+  if (n === 1) {
+    $('.warning'+m).removeClass('hidden');
+   }
   else {
     for(; i < n - 1; i++) {
       document.getElementById('group_name_'+m+'_'+i).value = document.getElementById('group_name_'+m+'_'+(i+1)).value;

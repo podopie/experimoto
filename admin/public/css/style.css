@@ -5,7 +5,7 @@ body { margin: 24px; padding-top: 40px; }
 
 .experiment-form label {
   display: inline-block;
-  width: 215px;
+  width: 220px;
   line-height: 1.8;
 }
 .experiment-form li {
@@ -23,4 +23,14 @@ body { margin: 24px; padding-top: 40px; }
 .table-btn {
   padding-bottom: 10px;
   padding-top: 1px;
+}
+.sub_exp {
+  background: rgba(0, 0, 64, 0.2);
+  margin: 10px;
+  padding: 10px;
+  width: 480px;
+  border-radius: 5px;
+}
+.warning {
+  color: #933;
 }
