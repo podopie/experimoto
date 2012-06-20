@@ -16,3 +16,8 @@
 
 <%= link_to 'Back', users_path %>
 </div>
+
+<% if experiment!(:some_experiment) == 'version_a' %>
+<div style= "width:200px; height: 200px; background-color: #0A0; border-radius: 100px;">
+<p style="color: white; position: relative; top: 50px; left: 45px; font-size: 21px;" >Exciting text!</p>
+<% end %>
