@@ -33,14 +33,7 @@ end
 
 
 get '/' do
-  experiments = []
-  $experimoto.mutex.synchronize do
-    $experimoto.db_sync(:already_locked => true)
-    $experimoto.experiments.keys.sort.each do |k|
-      experiments << $experimoto.experiments[k]
-    end
-  end
-  erb :index, :locals => {:experiments => experiments}
+  erb :index
 end
 
 get '/new/univariate' do
