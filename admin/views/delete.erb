@@ -1,0 +1,11 @@
+<h1>Deleting <%= @experiment.name %></h1>
+
+<p>Are you sure? Make sure that any code that expects this experiment
+to exist has been refactored to no longer depend on it, or at least
+have default values. Note that experiment-views (such as those created
+by a multivariate test) will also be deleted.</p>
+
+<form method="post">
+  <%= csrf_tag %>
+  <input type="submit" value="Delete" />
+</form>

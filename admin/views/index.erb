@@ -9,10 +9,6 @@
   <% for experiment in experiments.find_all { |e| !e.is_view? } %>
   <li class="experiment">
     <a href="/experiment/<%= experiment.id %>"><%= experiment.name %></a>
-    <form method="get" action="/experiment/<%= experiment.id %>/edit">
-      <input type="hidden" name="name" value="<%= experiment.name %>">
-      <input type="submit" class="btn" value="Edit" />
-    </form>
   </li>
   <% end %>
 </ol>
@@ -21,11 +17,7 @@
   <% for view in experiments.find_all { |e| e.is_view? } %>
   <li class="view">
     <%= view.name %> <br />
-    View into <%= "#{view.target_experiment_name}#{view.json_lookup_index ? '['+view.json_lookup_index.to_s+']' : ''}" %> <br />
-    <form method="get" action="/view/<%= view.id %>/edit">
-      <input type="hidden" name="name" value="<%= view.name %>">
-      <input type="submit" value="Edit" />
-    </form>
+    View into <%= "#{view.target_experiment_name}#{view.json_lookup_index ? '['+view.json_lookup_index.to_s+']' : ''}" %>
   </li>
   <% end %>
 </ol>

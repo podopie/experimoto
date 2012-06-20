@@ -104,6 +104,17 @@ post '/experiment/:id' do
   $experimoto.push_data(:data => [key, value])
 end
 
+get '/experiment/:id/delete' do
+  @experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  erb :delete
+end
+post '/experiment/:id/delete' do
+  x = $experimoto.experiments.values.find { |x| x.id == params[:id] }
+  $experimoto.delete_experiment(x.name)
+  redirect '/'
+end
+
+
 def params_to_experiment_hash(params)
   experiment_name = params[:experiment_name]
   type = params[:type]
