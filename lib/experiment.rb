@@ -27,13 +27,14 @@ module Experimoto
         @id = opts[:id] || Utils.new_id
         @type = 'Experiment'
         @name = opts[:name]
-        @created_at = opts[:created_at]
-        @modified_at = opts[:modified_at]
+        @created_at = opts[:created_at] || DateTime.now.to_s
+        @modified_at = opts[:modified_at] || DateTime.now.to_s
         @data = opts[:data] || {}
-        @data['description'] = opts[:description] if opts[:description]
+        self.description = opts[:description] if opts[:description]
+        self.sub_experiments = opts[:sub_experiments] if opts[:sub_experiments]
       end
     end
-
+    
     def description
       @data['description'] || ''
     end
@@ -44,7 +45,18 @@ module Experimoto
     def store_in_cookie?
       true
     end
-
+    
+    def multivariate?
+      @data.include?('sub_experiments')
+    end
+    
+    def sub_experiments
+      @data['sub_experiments']
+    end
+    def sub_experiments=x
+      @data['sub_experiments'] = x
+    end
+    
     def is_view?
       false
     end

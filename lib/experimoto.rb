@@ -159,9 +159,12 @@ module Experimoto
         raise ArgumentError
       end
       
-      @dbh.prepare('update experiments set type = ?, name = ?, created_at = ?, modified_at = ?, data = ? where id = ?;') do |sth|
+      @dbh.prepare('update experiments set type = ?, name = ?, modified_at = ?, data = ? where id = ?;') do |sth|
         row0 = experiment.to_row
-        sth.execute(row0.drop(1) + [row0[0]])
+        row = row0.clone
+        row.delete_at(0)
+        row.delete_at(2)
+        sth.execute(row + [row0[0]])
       end
       
       db_sync
@@ -206,13 +209,14 @@ module Experimoto
         unless opts[:experiments].kind_of?(Hash)
           raise ArgumentError, 'option hash needs a hash called :experiments, mapping sub-experiment names to arrays of sub-groups, to go with :multivariate'
         end
+        sub_experiments = opts[:experiments].keys.sort
         raise ArgumentError, 'need >= 2 sub-experiments' unless opts[:experiments].size >= 2
-        groups_list = opts[:experiments].keys.sort.map { |k| opts[:experiments][k] }
+        groups_list = sub_experiments.map { |k| opts[:experiments][k] }
         opts[:groups] = groups_list[0].product(*groups_list.drop(1)).map do |l|
           l.each { |k| raise ArgumentError, "#{k}" unless k.kind_of?(String) }
           JSON.unparse(l)
         end
-        
+        opts[:sub_experiments] = sub_experiments
         # TODO: assert that the type is a grouped type?
       end
       
@@ -286,7 +290,7 @@ module Experimoto
       user.groups[experiment_name] = group_name
       unless user.tester?
         @dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
-          sth.execute(user.id, experiment.id, group_name, DateTime.now, DateTime.now)
+          sth.execute(user.id, experiment.id, group_name, DateTime.now.to_s, DateTime.now.to_s)
         end
       end
       
@@ -312,7 +316,7 @@ module Experimoto
       unless user.tester?
         @dbh.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
           sth.execute(user.id, experiment.id, group_name, key, value,
-                      DateTime.now, DateTime.now)
+                      DateTime.now.to_s, DateTime.now.to_s)
         end
         experiment.local_event(:user => user, :group_name => group_name,
                                :key => key, :value => value)

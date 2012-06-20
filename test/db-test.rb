@@ -115,7 +115,7 @@ class TestDB < Test::Unit::TestCase
       e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment')
     end
     x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test-experiment2')
-    assert_raise SQLite3::ConstraintException do
+    assert_raise RuntimeError, SQLite3::ConstraintException do
       e.replace_experiment(:id => x.id, :type => 'ABExperiment', :name => 'test-experiment')
     end
   end

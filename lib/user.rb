@@ -21,9 +21,12 @@ module Experimoto
       else
         @id = opts[:id] || Utils.new_id
         @groups = opts[:groups] || {} # mapping of experiment name to group name
-        @created_at = opts[:created_at] || DateTime.new
-        @modified_at = opts[:modified_at] || DateTime.new
+        @created_at = opts[:created_at] || DateTime.now.to_s
+        @modified_at = opts[:modified_at] || DateTime.now.to_s
         @is_tester = true == opts[:is_tester]
+      end
+      if @created_at.kind_of?(String)
+        @created_at = DateTime.parse(@created_at)
       end
     end
     
