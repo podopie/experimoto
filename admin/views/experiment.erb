@@ -36,11 +36,13 @@
           <%= experiment.plays[group_name] %> participants
         </td>
         <td>
-          <%= experiment.utility(group_name).inspect %> utils
+          <%= experiment.utility(group_name) * experiment.plays[group_name] %> utils,
+          <%= experiment.utility(group_name) %> average
         </td>
         <% for v in experiment.utility_function_variables %>
           <td>
-            <%= experiment.event_totals[group_name][v] %> total
+            <%= experiment.event_totals[group_name][v] %> total,
+            <%= experiment.event_totals[group_name][v] / (0.001 + experiment.plays[group_name]) %> average
           </td>
         <% end %>
       </tr>

@@ -91,7 +91,15 @@ get '/experiment/:id' do
     @chart_sample_count = sample_count
     t0 = DateTime.parse(experiment.created_at) if experiment.created_at
     t0 ||= DateTime.now - 10
-    t1 = DateTime.now
+    t1 = nil
+    $experimoto.dbh.prepare('select max(created_at) from events where eid = ?') do |sth|
+      sth.execute(experiment.id).each do |row|
+        next if row.nil?
+        t1 = DateTime.parse(row[0])
+        break
+      end
+    end
+    t1 ||= DateTime.now
     starts = sample_count.times.to_a.map { |i| t0 + (t1-t0)*i*1.0/sample_count }
     ends = sample_count.times.to_a.map { |i| t0 + (t1-t0)*(i+1)*1.0/sample_count }
     @date_row = starts.map { |d| d.to_s }

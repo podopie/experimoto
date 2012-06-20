@@ -19,12 +19,13 @@ x = $experimoto.add_new_experiment(:name => 'canned_data_experiment',
                                    )
 
 wp = {'a' => 0.11, 'b' => 0.10, 'c' => 0.105 }
-bp = {'a' => 0.08, 'b' => 0.11, 'c' => 0.11 }
+bp = {'a' => 0.05, 'b' => 0.10, 'c' => 0.13 }
 
-10.times do |i|
-  puts "starting #{i} of 10"
-  sleep 2
-  1000.times do
+outer_loops = 100
+outer_loops.times do |i|
+  puts "starting #{i} of #{outer_loops}"
+  sleep 0.2
+  200.times do
     u = $experimoto.new_user_into_db
     s = $experimoto.user_experiment(u, 'canned_data_experiment')
     $experimoto.track(u, 'wargle') if rand() < wp[s]
