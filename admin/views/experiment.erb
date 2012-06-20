@@ -41,3 +41,35 @@
 <% end %>
 </tbody>
 </table>
+
+<% if @has_chart_info %>
+<table id="time_chart_info">
+  <thead>
+    <tr>
+      <th>dates</th>
+      <% for group_name in experiment.groups.keys.sort %>
+      <th>plays_<%= group_name %></th>
+      <th>utilities_<%= group_name %></th>
+      <% if experiment.type =~ /ucb1/i %>
+      <th>confidences_<%= group_name %></th>
+      <% end %>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+  <% for ix in @chart_sample_count.times.to_a %>
+    <tr>
+      <td><%= @date_row[ix].to_s %></td>
+      <% for group_name in experiment.groups.keys.sort %>
+      <td><%= @plays_rows[group_name][ix] %></td>
+      <td><%= @utilities_rows[group_name][ix] %></td>
+      <% if experiment.type =~ /ucb1/i %>
+      <td><%= @confidences_rows[group_name][ix] %></td>
+      <% end %>
+      <% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<% end %>
+

@@ -94,17 +94,20 @@ get '/experiment/:id' do
   $experimoto.db_sync
   puts "id: #{params[:id]}"
   experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
-  if experiment.total_plays > 100
+  if experiment.total_plays > 0 # 100
     #let's make a graph!
+    @has_chart_info = true
     sample_count = 10
-    t0 = DateTime.parse(experiment.created_at)
+    @chart_sample_count = sample_count
+    t0 = DateTime.parse(experiment.created_at) if experiment.created_at
+    t0 ||= DateTime.now - 10
     t1 = DateTime.now
     starts = sample_count.times.to_a.map { |i| t0 + (t1-t0)*i }
     ends = sample_count.times.to_a.map { |i| t0 + (t1-t0)*(i+1) }
     @date_row = starts.map { |d| d.to_s }
     @plays_rows = {}
     @utilities_rows = {}
-    @confidences_rows = {} if experiment.type =~ /ucb1/i
+#    @confidences_rows = {} if experiment.type =~ /ucb1/i
     sample_count.times do |i|
       utilities = {}
       plays = {}
@@ -115,17 +118,15 @@ get '/experiment/:id' do
                                                    :start_date => starts[i], :end_date => ends[i])
         @utilities_rows[group_name] ||= []
         @utilities_rows[group_name] << utilities[group_name]
+        @plays_rows ||= {}
         @plays_rows[group_name] ||= []
         @plays_rows[group_name] << plays[group_name]
-        if experiment.type =~ /ucb1/i
-          @confidence_rows[group_name] ||= []
-          @confidence_rows[group_name] << experiment.confidence_bound(group_name, utilities, plays)
-        end
       end
       if experiment.type =~ /ucb1/i
         experiment.groups.keys.each do |group_name|
-          @confidence_rows[group_name] ||= []
-          @confidence_rows[group_name] << experiment.confidence_bound(group_name, utilities, plays)
+          @confidences_rows ||= {}
+          @confidences_rows[group_name] ||= []
+          @confidences_rows[group_name] << experiment.confidence_bound(group_name, utilities, experiment.plays)
         end
       end
     end
