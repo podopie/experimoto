@@ -360,7 +360,9 @@ module Experimoto
       end
     end
     
-    def user_from_cookie(cookie_hash = {}, user = nil)
+    def user_from_cookie(cookie_hash = {}, db_user_id = nil)
+      db_user_modified_at = nil
+      user = nil
       
       if cookie_hash.include?('experimoto_data')
         begin
@@ -370,20 +372,48 @@ module Experimoto
           
           user = User.new(:cookie_hash => cookie_hash, :hmac_key => @hmac_key)
           
-          # clean out deprecated experiments and experiment-views
-          @mutex.synchronize do
-            user.groups.keys.each do |name|
-              unless @experiments.include?(name) && @experiments[name].store_in_cookie?
-                user.groups.delete(name)
-              end
-            end
-          end
+          db_user_id ||= user.id
         rescue
           # TODO: figure out a better way of handling malformed cookies :/
         end
       end
       
-      user = new_user_into_db if user.nil?
+      if db_user_id
+        dbh.prepare('select modified_at from users where id = ?') do |sth|
+          sth.execute(db_user_id).each do |x|
+            next if x.nil?
+            db_user_modified_at = x[0]
+            break
+          end
+        end
+      end
+      if db_user_modified_at && db_user_modified_at > user.modified_at
+        user.id = db_user_id
+        dbh.prepare('select eid, group_name from groupings where uid = ? where modified_at > ? order by created_at asc') do |sth|
+          sth.execute(db_user_id, user.modified_at).each do |row|
+            next if row.nil?
+            eid = row[0]
+            group_name = row[1]
+            experiment = @experiments.values.find { |x| x.id == eid }
+            if experiment
+              user.groups[experiment.name] = group_name
+            end
+          end
+        end
+      end
+      
+      if user
+        # clean out deprecated experiments and experiment-views
+        @mutex.synchronize do
+          user.groups.keys.each do |name|
+            unless @experiments.include?(name) && @experiments[name].store_in_cookie?
+              user.groups.delete(name)
+            end
+          end
+        end
+      else
+        user = new_user_into_db
+      end
       
       user
     end
