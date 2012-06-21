@@ -69,7 +69,7 @@
   <% end %>
   </tbody>
 </table>
-<h3>Total for each group (by order)</h3>
+<h3>Total for each group (by order of util)</h3>
 <% end %>
 
 <script>
@@ -95,16 +95,17 @@ console.log(group);
 // D3 Chart stuff
 
 // If you're only looking at one metric, graphing is easy...
-var x = d3.scale.linear()
-  .domain([0, d3.max(group[0])])
-  .range(["0px", "710px"]);
-var chart = d3.select(".body").append("div")
-  .attr("class", "chart");
-chart.selectAll("div")
-  .data(group[0])
-.enter().append("div")
-  .style("width", x)
-  .text(String);
-
+for (i = 0; i < group.length; i++) {
+  var x = d3.scale.linear()
+    .domain([0, d3.max(group[i])])
+    .range(["0px", "710px"]);
+  var chart = d3.select(".body").append("div")
+    .attr("class", "chart");
+  chart.selectAll("div")
+    .data(group[i])
+  .enter().append("div")
+    .style("width", x)
+    .text(String);
+}
 
 </script>
