@@ -1,0 +1,18 @@
+
+<h1> User Form </h1>
+<h3> Put a user in a bucket! </h3>
+
+<form method="post">
+<%= csrf_tag %>
+user/cookie id
+<input type="text" name="user_id" /><br />
+experiment name
+<input type="text" name="experiment_name" /><br />
+group/bucket name
+<input type="text" name="group_name" /><br />
+<input type="submit" value="Apply Group" />
+</form>
+
+
+
+
