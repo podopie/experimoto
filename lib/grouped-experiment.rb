@@ -28,6 +28,8 @@ module Experimoto
       self.group_split_weights ||= {}
       self.group_split_weights.default = 1.0
       self.group_split_weights.merge!(opts[:group_split_weights]) if opts[:group_split_weights]
+      self.group_annotations ||= {}
+      self.group_annotations.merge!(opts[:group_annotations]) if opts[:group_annotations]
     end
     
     def total_plays(plays=nil)
@@ -40,6 +42,13 @@ module Experimoto
     end
     def group_split_weights=x
       @data['group_split_weights'] = x
+    end
+    
+    def group_annotations
+      @data['group_annotations']
+    end
+    def group_annotations=x
+      @data['group_annotations'] = x
     end
     
     def groups
@@ -136,6 +145,8 @@ module Experimoto
         self.groups = Hash[arr.map { |g| [g.name, g] }]
       elsif opts.include?(:groups) && opts[:groups].kind_of?(Hash)
         self.groups = opts[:groups]
+      elsif opts.include?(:groups)
+        raise ArgumentError
       elsif @data.include?('groups')
       else
         self.groups = {'default' => ExperimentGroup.new(:name => 'default')}

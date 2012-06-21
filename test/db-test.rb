@@ -23,13 +23,41 @@ class TestDB < Test::Unit::TestCase
     assert_raise ArgumentError do
       e.add_new_experiment(:type => 'ABExperiment', :name => 'blah-blah')
     end
+    assert_raise ArgumentError do
+      x = e.add_new_experiment(:type => 'ABExperiment', :name => 'blah_blah', :groups => 'asdf')
+      puts x.inspect
+    end
+  end
+  
+  def test_experiment_group_annotations
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
+                         :groups => ['test_group'],
+                         :group_annotations => {'test_group' => 'test_annotation'})
+    u = e.new_user_into_db
+    assert_equal('test_annotation',
+                 e.user_experiment(u, 'test_experiment', :return_annotation => true))
+  end
+  
+  def test_experiment_group_annotation_fallback
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment',
+                         :groups => ['test_group'],
+                         :group_annotations => {})
+    u = e.new_user_into_db
+    assert_equal('test_group',
+                 e.user_experiment(u, 'test_experiment', :return_annotation => true))
   end
   
   def test_invalid_experiment_saving
     dbh = RDBI.connect(:SQLite3, :database => ":memory:")
     e = Experimoto::Experimoto.new(:dbh => dbh)
     assert_raise ArgumentError do
-      e.save_experiment(7)
+      e.save_experiment(:name => 7)
     end
   end
   

@@ -283,11 +283,11 @@ module Experimoto
       return opts[:default] if experiment.nil?
       
       if experiment.is_view?
-        group_name = _user_experiment(user, experiment.target_experiment_name, opts)
+        output = _user_experiment(user, experiment.target_experiment_name, opts)
         if experiment.json_lookup_index
-          group_name = JSON.parse(group_name)[experiment.json_lookup_index]
+          output = JSON.parse(output)[experiment.json_lookup_index]
         end
-        return group_name
+        return output
       end
       
       if user.groups.include?(experiment_name)
@@ -302,7 +302,11 @@ module Experimoto
         user.modified_at = DateTime.now.to_s
       end
       
-      group_name
+      if opts[:return_annotation]
+        experiment.group_annotations[group_name] || group_name
+      else
+        group_name
+      end
     end
     
     def user_db_grouping!(uid, eid, group_name)
