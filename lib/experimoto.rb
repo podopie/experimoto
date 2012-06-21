@@ -298,16 +298,21 @@ module Experimoto
       group_name = experiment.sample(:no_record => user.tester?)
       user.groups[experiment_name] = group_name
       unless user.tester?
-        dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
-          sth.execute(user.id, experiment.id, group_name, DateTime.now.to_s, DateTime.now.to_s)
-        end
+        user_db_grouping!(user.id, experiment.id, group_name)
         user.modified_at = DateTime.now.to_s
-        dbh.prepare('update users set modified_at = ? where id = ? and modified_at < ?') do |sth|
-          sth.execute(user.modified_at, user.id, user.modified_at)
-        end
       end
       
       group_name
+    end
+    
+    def user_db_grouping!(uid, eid, group_name)
+      date = DateTime.now.to_s
+      dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
+        sth.execute(uid, eid, group_name, date, date)
+      end
+      dbh.prepare('update users set modified_at = ? where id = ? and modified_at < ?') do |sth|
+        sth.execute(date, uid, date)
+      end
     end
     
     def user_experiment_event(user, experiment_name, key, value=1)

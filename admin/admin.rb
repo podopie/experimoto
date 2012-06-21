@@ -178,3 +178,15 @@ def params_to_experiment_hash(params)
     :groups => groups, :group_split_weights => weights,
     :utility_function => uf}
 end
+
+get '/user/:id' do
+  # TODO
+end
+post '/user/:id/set_group/:experiment_name/:group_name' do
+  uid = params[:id]
+  raise ArgumentError unless uid.size == 22
+  experiment = $experimoto.experiments[params[:experiment_name]]
+  $experimoto.user_db_grouping!(uid, experiment.id, params[:group_name])
+  redirect "/user/:id"
+end
+
