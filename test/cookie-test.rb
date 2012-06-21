@@ -114,6 +114,21 @@ class TestCookies < Test::Unit::TestCase
     assert_equal(0, x.utility(group))
   end
   
+  def test_cookie_user_sync_with_db_user
+    dbh = RDBI.connect(:SQLite3, :database => ":memory:")
+    e = Experimoto::Experimoto.new(:dbh => dbh)
+    e.db_sync
+    x = e.add_new_experiment(:type => 'ABExperiment', :name => 'test_experiment')
+    u = e.user_from_cookie()
+    date0 = u.modified_at
+    c = e.user_to_cookie(u)
+    sleep 2
+    e.user_experiment(u, x.name)
+    u2 = e.user_from_cookie(c)
+    assert(u2.modified_at > date0)
+    assert_equal('default', u2.groups['test_experiment'])
+  end
+  
 end
 
 

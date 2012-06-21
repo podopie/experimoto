@@ -387,10 +387,9 @@ module Experimoto
           end
         end
       end
-      if db_user_modified_at && db_user_modified_at > user.modified_at
-        user.id = db_user_id
-        dbh.prepare('select eid, group_name from groupings where uid = ? where modified_at > ? order by created_at asc') do |sth|
-          sth.execute(db_user_id, user.modified_at).each do |row|
+      if (user && user.id != db_user_id) || (db_user_modified_at && db_user_modified_at > user.modified_at)
+        dbh.prepare('select eid, group_name from groupings where uid = ? order by created_at asc') do |sth|
+          sth.execute(db_user_id).each do |row|
             next if row.nil?
             eid = row[0]
             group_name = row[1]
@@ -400,6 +399,8 @@ module Experimoto
             end
           end
         end
+        user.id = db_user_id
+        user.modified_at = db_user_modified_at
       end
       
       if user
