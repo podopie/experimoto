@@ -92,6 +92,21 @@ var group = []
 group = group.chunk(<%= experiment.utility_function_variables.length %>)
 console.log(group);
 
+<% row = 0 %>
+var timePlay = []
+var timeUtil = []
+<% for ix in @chart_sample_count.times.to_a %>
+  <% for group_name in experiment.groups.keys.sort %>
+  timePlay[<%= row %>] = <%= @plays_rows[group_name][ix] %>
+  timeUtil[<%= row %>] = <%= @utilities_rows[group_name][ix] %>
+  <% row = row + 1 %>
+  <% end %>
+<% end %>
+timePlay = d3.transpose(timePlay.chunk(<%= experiment.groups.keys.length %>))
+timeUtil = d3.transpose(timeUtil.chunk(<%= experiment.groups.keys.length %>))
+
+
+
 // D3 Chart stuff
 
 // If you're only looking at one metric, graphing is easy...
