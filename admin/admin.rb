@@ -179,14 +179,21 @@ def params_to_experiment_hash(params)
     :utility_function => uf}
 end
 
-get '/user/:id' do
-  # TODO
+get '/user/' do
+  # TODO: someday, have it be /user/:user_id, and have it list groups, and
+  # stats, etc. for now though, just a form for applying a group to a
+  # user.
+  erb :user
 end
-post '/user/:id/set_group/:experiment_name/:group_name' do
-  uid = params[:id]
+#post '/user/:id/set_group/:experiment_name/:group_name' do
+post '/user/' do
+  # NOTE: this basically just changes what will happen to the user's
+  # cookie in the future. a better thing to do would be to delete any
+  # groupings from the past, and also change any existing events.
+  uid = params[:user_id]
   raise ArgumentError unless uid.size == 22
   experiment = $experimoto.experiments[params[:experiment_name]]
   $experimoto.user_db_grouping!(uid, experiment.id, params[:group_name])
-  redirect "/user/:id"
+  redirect "/user/"
 end
 
