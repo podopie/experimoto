@@ -73,30 +73,38 @@
 <% end %>
 
 <script>
-var data = []
+Array.prototype.chunk = function(chunkSize) {
+    var array=this;
+    return [].concat.apply([],
+        array.map(function(elem,i) {
+            return i%chunkSize ? [] : [array.slice(i,i+chunkSize)];
+        })
+    );
+}
 <% row = 0 %>
+var group = []
 <% for group_name in experiment.groups.keys.sort %>
   <% for v in experiment.utility_function_variables %>
-  data[<%= row %>] = <%= experiment.event_totals[group_name][v] %>
+  group[<%= row %>] = <%= experiment.event_totals[group_name][v] %>
   <% row = row + 1 %>
   <% end %>
 <% end %>
+group = group.chunk(<%= experiment.utility_function_variables.length %>)
+console.log(group);
 
 // D3 Chart stuff
 
 // If you're only looking at one metric, graphing is easy...
-if (data.length == <%= experiment.groups.length %>) {
-  var x = d3.scale.linear()
-    .domain([0, d3.max(data)])
-    .range(["0px", "710px"]);
-console.log(data)
+var x = d3.scale.linear()
+  .domain([0, d3.max(group[0])])
+  .range(["0px", "710px"]);
 var chart = d3.select(".body").append("div")
-    .attr("class", "chart");
+  .attr("class", "chart");
 chart.selectAll("div")
-    .data(data)
-  .enter().append("div")
-    .style("width", x)
-    .text(String);
-}
+  .data(group[0])
+.enter().append("div")
+  .style("width", x)
+  .text(String);
+
 
 </script>
