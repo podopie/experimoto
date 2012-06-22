@@ -3,16 +3,7 @@
 <div style="background-color: #<%= experiment!(:sign_up_background_color, :default => 'ffffff') %>;">
 <%= render 'form' %>
 
-<% case experiment!(:sign_up_tag_line) %>
-<% when 'charitable' %>
-  <p>Did you know 25% of our revenue goes towards saving the rainforest?</p>
-<% when 'cruel' %>
-  <p>Seven puppies were harmed in the rendering of this page.</p>
-<% when 'theological' %>
-  <p>Every time you don't pay us, God kills a kitten.</p>
-<% else %>
-  <p>You should sign up!</p>
-<% end %>
+<%= experiment!(:sign_up_tag_line, :return_annotation => true) %>
 
 <%= link_to 'Back', users_path %>
 </div>

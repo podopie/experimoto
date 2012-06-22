@@ -281,6 +281,7 @@ module Experimoto
     def _user_experiment(user, experiment_name, opts = {})
       experiment = @experiments[experiment_name]
       return opts[:default] if experiment.nil?
+      cached = false
       
       if experiment.is_view?
         output = _user_experiment(user, experiment.target_experiment_name, opts)
@@ -292,21 +293,26 @@ module Experimoto
       
       if user.groups.include?(experiment_name)
         # TODO: make sure group isn't deprecated?
-        return user.groups[experiment_name]
+        group_name = user.groups[experiment_name]
+        cached = true
       end
       
-      group_name = experiment.sample(:no_record => user.tester?)
-      user.groups[experiment_name] = group_name
-      unless user.tester?
-        user_db_grouping!(user.id, experiment.id, group_name)
-        user.modified_at = DateTime.now.to_s
+      unless cached
+        group_name = experiment.sample(:no_record => user.tester?)
+        user.groups[experiment_name] = group_name
+        unless user.tester?
+          user_db_grouping!(user.id, experiment.id, group_name)
+          user.modified_at = DateTime.now.to_s
+        end
       end
       
-      if opts[:return_annotation]
-        experiment.group_annotations[group_name] || group_name
-      else
-        group_name
+      output = group_name
+      
+      if opts[:return_annotation] && experiment.group_annotations[group_name] && experiment.group_annotations[group_name].size > 1
+        output = experiment.group_annotations[group_name]
       end
+      
+      output
     end
     
     def user_db_grouping!(uid, eid, group_name)

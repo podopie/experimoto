@@ -32,6 +32,7 @@
           <tr>
             <th>Group Name</th>
             <th>Group Split %</th>
+            <th>Group Annotation</th>
             <th></th>
           </tr>
         </thead>
@@ -54,6 +55,9 @@
     s += '</td>';
     s += '<td>';
     s += '<input type="text" id="group_weight_'+n+'" name="group_weight_'+n+'" />';
+    s += '</td>';
+    s += '<td>';
+    s += '<input type="text" id="group_annotation_'+n+'" name="group_annotation_'+n+'" />';
     s += '</td>';
     s += '<td class="table-btn">';
     s += '<button type="button" class="deleteGroup btn btn-danger" onclick="javascript:delete_group('+n+')">Delete</button>';
@@ -93,7 +97,8 @@
       <% for group_name, i in @experiment.groups.keys.sort.zip(1000.times.to_a) %>
         add_group();
         $('#group_name_<%= i %>').val('<%= group_name %>');
-        $('#group_weight_<%= i %>').val('<%= @experiment.group_split_weights[group_name] %>');
+        $('#group_weight_<%= i %>').val('<%= @experiment.group_split_weights.include?(group_name) ? @experiment.group_split_weights[group_name] : '' %>');
+        $('#group_annotation_<%= i %>').val('<%= @experiment.group_annotations[group_name] %>');
       <% end %>
     <% else %>
       add_group();

@@ -40,7 +40,6 @@ end
 
 post '/new/univariate' do
   x = $experimoto.add_new_experiment(params_to_experiment_hash(params))
-  puts x.inspect
   redirect '/'
 end
 
@@ -50,7 +49,6 @@ end
 
 post '/new/multivariate' do
   sub_experiments = {}
-  puts params.inspect
   1000.times do |i|
     break unless params["experiment_name_#{i}"]
     gl = []
@@ -60,7 +58,6 @@ post '/new/multivariate' do
     end
     sub_experiments[params["experiment_name_#{i}"]] = gl
   end
-  puts sub_experiments.inspect
   h = params_to_experiment_hash(params)
   h.delete(:groups)
   h.delete(:group_split_weights)
@@ -75,15 +72,12 @@ get '/experiment/:id/edit' do
 end
 
 post '/experiment/:id/edit' do
-  puts "params[:experiment_id] #{params[:experiment_id]}"
   x = $experimoto.replace_experiment(params_to_experiment_hash(params).merge(:id => params[:experiment_id]))
-  puts x.inspect
   redirect "/experiment/#{params[:experiment_id]}"
 end
 
 get '/experiment/:id' do
   $experimoto.db_sync
-  puts "id: #{params[:id]}"
   experiment = $experimoto.experiments.values.find { |x| x.id == params[:id] }
   if experiment.total_plays > 0 # 100
     #let's make a graph!
@@ -95,7 +89,7 @@ get '/experiment/:id' do
     t1 = nil
     $experimoto.dbh.prepare('select max(created_at) from events where eid = ?') do |sth|
       sth.execute(experiment.id).each do |row|
-        next if row.nil?
+        next if row.nil? || row[0].nil?
         t1 = DateTime.parse(row[0])
         break
       end
@@ -135,7 +129,6 @@ get '/experiment/:id' do
       end
     end
   end
-  puts "experiment: #{experiment.inspect}"
   erb :experiment, :locals => {:experiment => experiment}
 end
 
@@ -162,22 +155,25 @@ def params_to_experiment_hash(params)
   description =  params[:description]
   groups = []
   weights = {}
+  group_annotations = {}
   1000.times do |i|
     break unless params["group_name_#{i}"]
     name = params["group_name_#{i}"]
     groups << name
     weight = nil
     begin
-      weight = params["group_weight_#{i}"].to_f
+      weight = params["group_weight_#{i}"].to_f if params["group_weight_#{i}"].size > 0
     rescue
     end
-    weights[name] = weight if weight && weight <= 0.0
+    weights[name] = weight if weight && weight >= 0.0
+    annotation = params["group_annotation_#{i}"]
+    group_annotations[name] = annotation if annotation && annotation.size > 0
   end
   uf = params[:utility_function]
   uf = nil if uf.nil? || uf.size < 1
   {:name => experiment_name, :type => type, :description => description,
     :groups => groups, :group_split_weights => weights,
-    :utility_function => uf}
+    :utility_function => uf, :group_annotations => group_annotations}
 end
 
 get '/user/' do

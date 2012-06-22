@@ -29,6 +29,7 @@ module Experimoto
       self.group_split_weights.default = 1.0
       self.group_split_weights.merge!(opts[:group_split_weights]) if opts[:group_split_weights]
       self.group_annotations ||= {}
+      self.group_annotations.default = ''
       self.group_annotations.merge!(opts[:group_annotations]) if opts[:group_annotations]
     end
     

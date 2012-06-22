@@ -16,8 +16,9 @@
     <tr>
       <th>Group Name</th>
       <th>Split %</th>
+      <th>Annotation</th>
       <th># Runs</th>
-      <th>Avg Utility</th>
+      <th>Utility</th>
       <% for v in experiment.utility_function_variables %>
         <th><%= v %></th>
       <% end %>
@@ -27,7 +28,8 @@
     <% for group_name in experiment.groups.keys.sort %>
       <tr id="<%= group_name %>">
         <td class="column-name"><%= group_name %></td>
-        <td class="column-splt"><%= experiment.group_split_weights[group_name] %></td>
+        <td class="column-splt"><%= experiment.group_split_weights.include?(group_name) ? experiment.group_split_weights[group_name] : '' %></td>
+        <td class="column-anno"><%= experiment.group_annotations[group_name] %></td>
         <td class="column-play"><%= experiment.plays[group_name] %> participants</td>
         <td class="column-util"><%= experiment.utility(group_name) * experiment.plays[group_name] %> utils,
           <%= experiment.utility(group_name) %> average</td>
