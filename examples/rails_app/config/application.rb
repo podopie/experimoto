@@ -64,7 +64,8 @@ module DatRailsApp
       require 'rdbi-driver-sqlite3'
       db_location = File.expand_path(File.join(File.dirname(__FILE__),
                                                '..','..','..','test-db.sqlite3'))
-      initialize_experimoto(:rdbi_args => [:SQLite3, {:database => db_location}])
+      dbh = RDBI.connect(:SQLite3, :database => db_location)
+      initialize_experimoto(:dbh => dbh)
     end
     
   end

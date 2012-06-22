@@ -78,6 +78,7 @@
       for(; i < n - 1; i++) {
         document.getElementById('group_name_'+i).value = document.getElementById('group_name_'+(i+1)).value;
         document.getElementById('group_weight_'+i).value = document.getElementById('group_weight_'+(i+1)).value;
+        document.getElementById('group_annotation_'+i).value = document.getElementById('group_annotation_'+(i+1)).value;
       }
       x = document.getElementById('group_tr_'+(n-1));
       x.parentNode.removeChild(x);
