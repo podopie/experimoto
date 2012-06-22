@@ -119,6 +119,7 @@ group = group.chunk(<%= experiment.utility_function_variables.length %>)
   timePlay = d3.transpose(timePlay.chunk(<%= experiment.groups.keys.length %>))
   timeUtil = d3.transpose(timeUtil.chunk(<%= experiment.groups.keys.length %>))
 <% end %>
+console.log(<%= experiment.groups.keys.inspect %>[0])
 // D3 Chart stuff
 
 // If you're only looking at one metric, graphing is easy...
@@ -139,7 +140,7 @@ for (i = 0; i < group.length; i++) {
 // ToDo: use timePlot, timePlay, and timeUtil to make a time-series Chart
 
 var palette = new Rickshaw.Color.Palette();
-
+console.log(timeUtil[0])
 var graph = new Rickshaw.Graph( {
   element: document.querySelector("#chart"),
   width: 540,
@@ -147,18 +148,13 @@ var graph = new Rickshaw.Graph( {
   renderer: 'line',
   series: [
     {
-      name: "a",
-      data: [ { x: -1893456000, y: 174 }, { x: -1577923200, y: 226 }, { x: -1262304000, y: 535 }, { x: -946771200, y: 209 }, { x: -631152000, y: 0 }, { x: -315619200, y: 205 }, { x: 0, y: 15 }, { x: 315532800, y: 0 }, { x: 631152000, y: 0 }, { x: 946684800, y: 0 } ],
+      name: <%= experiment.groups.keys.inspect %>[0],
+      data: [ { x: -1893456000, y: timeUtil[0][0] }, { x: -1577923200, y: timeUtil[0][1] }, { x: -1262304000, y: timeUtil[0][2] }, { x: -946771200, y: timeUtil[0][3] }, { x: -631152000, y: timeUtil[0][4] }, { x: -315619200, y: timeUtil[0][5] }, { x: 0, y: timeUtil[0][6] }, { x: 315532800, y: timeUtil[0][7] }, { x: 631152000, y: timeUtil[0][8] }, { x: 946684800, y: timeUtil[0][9] } ],
       color: palette.color()
     },
     {
-      name: "b",
-      data: [ { x: -1893456000, y: 348 }, { x: -1577923200, y: 431 }, { x: -1262304000, y: 415 }, { x: -946771200, y: 520 }, { x: -631152000, y: 1006 }, { x: -315619200, y: 308 }, { x: 0, y: 130 }, { x: 315532800, y: 0 }, { x: 631152000, y: 0 }, { x: 946684800, y: 0 } ],
-      color: palette.color()
-    },
-    {
-      name: "c",
-      data: [ { x: -1893456000, y: 478 }, { x: -1577923200, y: 376 }, { x: -1262304000, y: 157 }, { x: -946771200, y: 475 }, { x: -631152000, y: 0 }, { x: -315619200, y: 384 }, { x: 0, y: 838 }, { x: 315532800, y: 835 }, { x: 631152000, y: 935 }, { x: 946684800, y: 880 } ],
+      name: <%= experiment.groups.keys.inspect %>[1],
+      data: [ { x: -1893456000, y: timeUtil[1][0] }, { x: -1577923200, y: timeUtil[1][1] }, { x: -1262304000, y: timeUtil[1][2] }, { x: -946771200, y: timeUtil[1][3] }, { x: -631152000, y: timeUtil[1][4] }, { x: -315619200, y: timeUtil[1][5] }, { x: 0, y: timeUtil[1][6] }, { x: 315532800, y: timeUtil[1][7] }, { x: 631152000, y: timeUtil[1][8] }, { x: 946684800, y: timeUtil[1][9] } ],
       color: palette.color()
     }
   ]
