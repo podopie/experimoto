@@ -1,7 +1,7 @@
 .nav ul { list-style: none; }
 .nav ul li { float: left; padding: 6px; }
 body { margin: 24px; padding-top: 40px; }
-.body { clear: both; margin-left: 230px; padding-left: 20px; width: 710px; border-left: 3px solid #333; }
+.body { clear: both; margin-left: 230px; padding-left: 20px; border-left: 3px solid #333; }
 
 .experiment-form label {
   display: inline-block;

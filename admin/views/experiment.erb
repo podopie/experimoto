@@ -149,19 +149,24 @@ var graph = new Rickshaw.Graph( {
   series: [
     {
       name: <%= experiment.groups.keys.inspect %>[0],
-      data: [ { x: -1893456000, y: timeUtil[0][0] }, { x: -1577923200, y: timeUtil[0][1] }, { x: -1262304000, y: timeUtil[0][2] }, { x: -946771200, y: timeUtil[0][3] }, { x: -631152000, y: timeUtil[0][4] }, { x: -315619200, y: timeUtil[0][5] }, { x: 0, y: timeUtil[0][6] }, { x: 315532800, y: timeUtil[0][7] }, { x: 631152000, y: timeUtil[0][8] }, { x: 946684800, y: timeUtil[0][9] } ],
+      data: [ { x: 0, y: timeUtil[0][0] }, { x: 1, y: timeUtil[0][1] }, { x: 2, y: timeUtil[0][2] }, { x: 3, y: timeUtil[0][3] }, { x: 4, y: timeUtil[0][4] }, { x: 5, y: timeUtil[0][5] }, { x: 6, y: timeUtil[0][6] }, { x: 7, y: timeUtil[0][7] }, { x: 8, y: timeUtil[0][8] }, { x: 9, y: timeUtil[0][9] } ],
       color: palette.color()
     },
     {
-      name: <%= experiment.groups.keys.inspect %>[1],
-      data: [ { x: -1893456000, y: timeUtil[1][0] }, { x: -1577923200, y: timeUtil[1][1] }, { x: -1262304000, y: timeUtil[1][2] }, { x: -946771200, y: timeUtil[1][3] }, { x: -631152000, y: timeUtil[1][4] }, { x: -315619200, y: timeUtil[1][5] }, { x: 0, y: timeUtil[1][6] }, { x: 315532800, y: timeUtil[1][7] }, { x: 631152000, y: timeUtil[1][8] }, { x: 946684800, y: timeUtil[1][9] } ],
+      name: <%= experiment.groups.keys.inspect %>[2],
+      data: [ { x: 0, y: timeUtil[2][0] }, { x: 1, y: timeUtil[2][1] }, { x: 2, y: timeUtil[2][2] }, { x: 3, y: timeUtil[2][3] }, { x: 4, y: timeUtil[2][4] }, { x: 5, y: timeUtil[2][5] }, { x: 6, y: timeUtil[2][6] }, { x: 7, y: timeUtil[2][7] }, { x: 8, y: timeUtil[2][8] }, { x: 9, y: timeUtil[2][9] } ],
       color: palette.color()
     }
   ]
 } );
 
-var x_axis = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+var time = new Rickshaw.Fixtures.Time();
+var ticks = time.unit('ticks');
 
+var xAxis = new Rickshaw.Graph.Axis.Time({
+    graph: graph,
+    timeUnit: ticks
+});
 var y_axis = new Rickshaw.Graph.Axis.Y( {
   graph: graph,
   orientation: 'left',
