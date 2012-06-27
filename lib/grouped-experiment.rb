@@ -116,21 +116,35 @@ module Experimoto
       biggest = self.groups.keys.map do |group_name|
         [quick_utility(group_name), group_name]
       end.max[1]
+      biggest_variance naive_utility_variance(handle, biggest)
       is_significant = self.groups.keys.find_all { |n| biggest != n }.map do |group_name|
         n = [@plays[biggest], @plays[group_name]].min
         difference = quick_utility(biggest) - quick_utility(group_name)
-        total_variance = utility_variance(handle, biggest) + utility_variance(handle, group_name)
+        total_variance = biggest_variance + naive_utility_variance(handle, group_name)
         Math.sqrt(n) * difference > 1.645 * total_variance
       end.all?
       return biggest if is_significant
       nil
     end
     
-    def utility_variance(handle, group_name)
+    def naive_utility_variance(handle, group_name)
       expr = utility_function_string
-      utility_function_variables(expr).map do |event_key|
-        db_event_variance(handle, group_name, event_key)
-      end.inject(0) { |a, b| a + b }
+      vars = {}
+      utility_function_variables(expr).each do |event_key|
+        vars[event_key] = db_event_variance(handle, group_name, event_key)
+      end
+      metavars = vars.keys.sort.map do |k|
+        [vars[k], -vars[k]]
+      end
+      metavars = metavars[0].product(*metavars.drop(1))
+      metavars.map do |l|
+        event_totals = {}
+        event_totals[group_name] = {}
+        l.size.times do |i|
+          event_totals[group_name][vars.keys.sort[i]] = l[i]
+        end
+        quick_utility(group_name, :event_totals => event_totals)
+      end.max
     end
     
     def quick_utility(group_name, opts = {})
