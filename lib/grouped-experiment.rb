@@ -111,6 +111,28 @@ module Experimoto
       s.scan(/[A-z_][0-9A-z_]*/).uniq.sort
     end
     
+    def naively_statistically_significant_winner(handle)
+      return nil if self.groups.size <= 1
+      biggest = self.groups.keys.map do |group_name|
+        [quick_utility(group_name), group_name]
+      end.max[1]
+      is_significant = self.groups.keys.find_all { |n| biggest != n }.map do |group_name|
+        n = [@plays[biggest], @plays[group_name]].min
+        difference = quick_utility(biggest) - quick_utility(group_name)
+        total_variance = utility_variance(handle, biggest) + utility_variance(handle, group_name)
+        Math.sqrt(n) * difference > 1.645 * total_variance
+      end.all?
+      return biggest if is_significant
+      nil
+    end
+    
+    def utility_variance(handle, group_name)
+      expr = utility_function_string
+      utility_function_variables(expr).map do |event_key|
+        db_event_variance(handle, group_name, event_key)
+      end.inject(0) { |a, b| a + b }
+    end
+    
     def quick_utility(group_name, opts = {})
       plays = opts[:plays] || @plays
       event_totals = opts[:event_totals] || @event_totals
