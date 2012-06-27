@@ -79,10 +79,26 @@ module Experimoto
     end
     def db_event_variance(handle, group_name, event_key)
       n = db_play_count(handle, group_name)
-      return 0 if n <= 0
+      return 10000 if n <= 0
       s = db_event_sum(handle, group_name, event_key)
       ss = EventStats.get_event_stat(handle, self.id, group_name, event_key, 'value_squared_sum')
-      ((ss/n) - (s/n)*(s/n)).abs
+      estimated_variance = ((ss/n) - (s/n)*(s/n)).abs
+      # NOTE: To account for the variance in the estimated variance,
+      # this returns a higher value than the estimate, lowering as n
+      # increases. For n <= 10, an arbitrarily high number is
+      # potentially used, in case there simply hasn't been enough
+      # data. Otherwise, we use this expression that I arbitrarily
+      # created by checking that for 10 < n < 800...
+      # 
+      # (1-Distribution::ChiSquare.cdf(n*safety_multiplier,n-1))<0.05
+      # 
+      # where I'm using as a guideline:
+      # 
+      # http://en.wikipedia.org/wiki/Cochran%27s_theorem#Estimation_of_variance
+      # 
+      safety_multiplier = 2.0
+      safety_multiplier = 1.05 + 1.0/(0.035*(n-5)) if n > 10
+      [estimated_variance * safety_multiplier, 11.0 - n].max
     end
     def db_event_stdev(handle, group_name, event_key)
       Math.sqrt(db_event_variance(handle, group_name, event_key))
