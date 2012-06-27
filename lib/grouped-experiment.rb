@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'json'
 
+require File.expand_path(File.join(File.dirname(__FILE__),'event-stats'))
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment-group'))
 
@@ -64,6 +65,29 @@ module Experimoto
       init_event_total_for_group(opts[:name])
     end
     
+    def db_play_count(handle, group_name)
+      EventStats.get_event_stat(handle, self.id, group_name, '', 'play_count')
+    end
+    def db_event_sum(handle, group_name, event_key)
+      EventStats.get_event_stat(handle, self.id, group_name, event_key, 'value_sum')
+    end
+    def db_event_mean(handle, group_name, event_key)
+      n = db_play_count(handle, group_name)
+      return 0 if n <= 0
+      s = db_event_sum(handle, group_name, event_key)
+      s / n
+    end
+    def db_event_variance(handle, group_name, event_key)
+      n = db_play_count(handle, group_name)
+      return 0 if n <= 0
+      s = db_event_sum(handle, group_name, event_key)
+      ss = EventStats.get_event_stat(handle, self.id, group_name, event_key, 'value_squared_sum')
+      ((ss/n) - (s/n)*(s/n)).abs
+    end
+    def db_event_stdev(handle, group_name, event_key)
+      Math.sqrt(db_event_variance(handle, group_name, event_key))
+    end
+    
     def init_event_total_for_group(group_name)
       @event_totals[group_name] = {}
       @event_totals[group_name].default = 0
@@ -85,6 +109,25 @@ module Experimoto
     def utility_function_variables(s=nil)
       s ||= utility_function_string
       s.scan(/[A-z_][0-9A-z_]*/).uniq.sort
+    end
+    
+    def quick_utility(group_name, opts = {})
+      plays = opts[:plays] || @plays
+      event_totals = opts[:event_totals] || @event_totals
+      expr = opts[:utility_function] || utility_function_string
+      
+      utility_function_variables(expr).each do |k|
+        if 0 == plays[group_name]
+          avg = 0.0
+        else
+          avg = (1.0 * (event_totals[group_name][k])) / plays[group_name]
+        end
+        expr = expr.gsub(k, "(#{avg})")
+      end
+      unless(0 == expr.gsub(/[0-9+\-*\/()\. ]/,'').size && expr.count('(') == expr.count(')'))
+        raise ArgumentError, "invalid utility function: `#{expr}`"
+      end
+      eval('('+expr+')')
     end
     
     def utility(group_name, opts = {})
@@ -120,18 +163,8 @@ module Experimoto
                           :start_date => start_date, :end_date => end_date)
         end
       end
-      utility_function_variables(expr).each do |k|
-        if 0 == plays[group_name]
-          avg = 0.0
-        else
-          avg = (1.0 * (event_totals[group_name][k])) / plays[group_name]
-        end
-        expr = expr.gsub(k, "(#{avg})")
-      end
-      unless(0 == expr.gsub(/[0-9+\-*\/()\. ]/,'').size && expr.count('(') == expr.count(')'))
-        raise ArgumentError, "invalid utility function: `#{expr}`"
-      end
-      eval('('+expr+')')
+      
+      quick_utility(group_name, :plays => plays, :event_totals => event_totals, :utility_function => expr)
     end
     
     def initialize_grouped_experiment_from_args(opts)
@@ -176,10 +209,14 @@ module Experimoto
     
     def sync_play_data(dbh, opts={})
       plays = opts[:plays] || @plays
-      sql = 'select eid, group_name, count(*) from groupings where eid = ? and group_name = ?'
-      if opts[:start_date] && opts[:end_date]
-        sql += ' and created_at >= ? and created_at < ?'
+      unless opts[:start_date] && opts[:end_date]
+        self.groups.keys.each do |group_name|
+          plays[group_name] = db_play_count(dbh, group_name)
+        end
+        return plays
       end
+      sql = 'select eid, group_name, count(*) from groupings where eid = ? and group_name = ?'
+      sql += ' and created_at >= ? and created_at < ?'
       dbh.prepare(sql + ';') do |sth|
         self.groups.keys.each do |name|
           sql_args = [@id, name]
@@ -194,14 +231,19 @@ module Experimoto
           end
         end
       end
+      plays
     end
     
     def sync_event_data(dbh, event_name, opts={})
       event_totals = opts[:event_totals] || @event_totals
-      sql = 'select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?'
-      if opts[:start_date] && opts[:end_date]
-        sql += ' and created_at >= ? and created_at < ?'
+      unless opts[:start_date] && opts[:end_date]
+        self.groups.keys.each do |group_name|
+          event_totals[group_name][event_name] = db_event_sum(dbh, group_name, event_name)
+        end
+        return event_totals
       end
+      sql = 'select eid, group_name, sum(value) from events where eid = ? and group_name = ? and key = ?'
+      sql += ' and created_at >= ? and created_at < ?'
       dbh.prepare(sql + ';') do |sth|
         self.groups.keys.each do |group_name|
           sql_args = [@id, group_name, event_name]
@@ -217,6 +259,7 @@ module Experimoto
           end
         end
       end
+      return event_totals
     end
     
     def sample(opts={})

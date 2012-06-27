@@ -24,8 +24,8 @@ module Experimoto
     
     def utilities
       tmp = {}
-      self.groups.keys.map do |name|
-        tmp[name] = utility(name)
+      self.groups.keys.map do |group_name|
+        tmp[group_name] = quick_utility(group_name)
       end
       tmp
     end

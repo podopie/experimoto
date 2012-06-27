@@ -45,15 +45,17 @@ class TestExperimentViews < Test::Unit::TestCase
     assert_equal(nil, u.groups['test_experiment_view'])
     assert_equal('default', u.groups['test_experiment'])
     
+    # user_experiment_event should do nothing
     e.user_experiment_event(u, 'test_experiment_view', 'success', 1)
-    assert_equal(1.0, e.experiments['test_experiment'].utility('default'))
+    assert_equal(0.0, e.experiments['test_experiment'].utility('default'))
     e.db_sync
-    assert_equal(1.0, e.experiments['test_experiment'].utility('default'))
+    assert_equal(0.0, e.experiments['test_experiment'].utility('default'))
     
+    # track should affect original experiment, not view
     e.track(u, 'success', 1)
-    assert_equal(2.0, e.experiments['test_experiment'].utility('default'))
+    assert_equal(1.0, e.experiments['test_experiment'].utility('default'))
     e.db_sync
-    assert_equal(2.0, e.experiments['test_experiment'].utility('default'))
+    assert_equal(1.0, e.experiments['test_experiment'].utility('default'))
   end
   
   def test_indexed_view
@@ -71,14 +73,14 @@ class TestExperimentViews < Test::Unit::TestCase
     assert_equal('["a","z"]', u.groups['test_experiment'])
     
     e.user_experiment_event(u, 'test_experiment_view', 'success', 1)
-    assert_equal(1.0, e.experiments['test_experiment'].utility('["a","z"]'))
+    assert_equal(0.0, e.experiments['test_experiment'].utility('["a","z"]'))
     e.db_sync
-    assert_equal(1.0, e.experiments['test_experiment'].utility('["a","z"]'))
+    assert_equal(0.0, e.experiments['test_experiment'].utility('["a","z"]'))
     
     e.track(u, 'success', 1)
-    assert_equal(2.0, e.experiments['test_experiment'].utility('["a","z"]'))
+    assert_equal(1.0, e.experiments['test_experiment'].utility('["a","z"]'))
     e.db_sync
-    assert_equal(2.0, e.experiments['test_experiment'].utility('["a","z"]'))
+    assert_equal(1.0, e.experiments['test_experiment'].utility('["a","z"]'))
   end
   
 end

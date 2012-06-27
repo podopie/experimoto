@@ -10,6 +10,7 @@ require 'rubygems'
 require 'json'
 require 'rdbi'
 
+require File.expand_path(File.join(File.dirname(__FILE__),'event-stats'))
 require File.expand_path(File.join(File.dirname(__FILE__),'experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'ucb1-experiment'))
 require File.expand_path(File.join(File.dirname(__FILE__),'ab-experiment'))
@@ -62,38 +63,40 @@ module Experimoto
     end
     
     def generate_tables
-      dbh.execute('create table if not exists experiments (' +
-                   ['id char(22) primary key',
-                    'type varchar(100)',
-                    'name varchar(200)',
-                    'created_at datetime',
-                    'modified_at datetime',
-                    'data text'
-                   ].join(',') + ');')
-      dbh.execute('create table if not exists users (' +
-                   ['id char(22) primary key',
-                    'created_at datetime',
-                    'modified_at datetime'
-                   ].join(',') + ');')
-      dbh.execute('create table if not exists groupings (' +
-                   ['id integer primary key autoincrement',
-                    'uid char(22)',
-                    'eid char(22)',
-                    'group_name varchar(200)',
-                    'created_at datetime',
-                    'modified_at datetime'
-                   ].join(',') + ');')
-      dbh.execute('create table if not exists events (' +
-                   ['id integer primary key autoincrement',
-                    'uid char(22)',
-                    'eid char(22)',
-                    'group_name varchar(200)',
-                    'key varchar(200)',
-                    'value double',
-                    'created_at datetime',
-                    'modified_at datetime'
-                   ].join(',') + ');')
-      # TODO: indexes
+      handle = dbh
+      handle.execute('create table if not exists experiments (' +
+                     ['id char(22) primary key',
+                      'type varchar(100)',
+                      'name varchar(200)',
+                      'created_at datetime',
+                      'modified_at datetime',
+                      'data text'
+                     ].join(',') + ');')
+      handle.execute('create table if not exists users (' +
+                     ['id char(22) primary key',
+                      'created_at datetime',
+                      'modified_at datetime'
+                     ].join(',') + ');')
+      handle.execute('create table if not exists groupings (' +
+                     ['id integer primary key autoincrement',
+                      'uid char(22)',
+                      'eid char(22)',
+                      'group_name varchar(200)',
+                      'created_at datetime',
+                      'modified_at datetime'
+                     ].join(',') + ');')
+      handle.execute('create table if not exists events (' +
+                     ['id integer primary key autoincrement',
+                      'uid char(22)',
+                      'eid char(22)',
+                      'group_name varchar(200)',
+                      'key varchar(200)',
+                      'value double',
+                      'created_at datetime',
+                      'modified_at datetime'
+                     ].join(',') + ');')
+      EventStats.table_creation_statements.each { |stmt| handle.execute(stmt) }
+      # indexes
       indexes = ['create unique index experiment_names on experiments(name asc);',
                  'create index user_created_at  on users(created_at  asc);',
                  'create index user_modified_at on users(modified_at asc);',
@@ -102,11 +105,11 @@ module Experimoto
                  'create index grouping_modified_at on groupings(modified_at asc);',
                  'create index event_eid_group_key on events(eid, group_name, key);',
                  'create index event_created_at  on events(created_at  asc);',
-                 'create index event_modified_at on events(modified_at asc);',
-                ]
+                 'create index event_modified_at on events(modified_at asc);'
+                ] + EventStats.index_creation_statements
       indexes.each do |ix|
         begin
-          dbh.execute(ix)
+          handle.execute(ix)
         rescue SQLite3::SQLException
           # NOTE: mysql might not support create index if not exists,
           # so just gonna have to rescue a lot of exceptions.
@@ -114,7 +117,7 @@ module Experimoto
       end
       @generated_tables = true
     end
-
+    
     def experiment_type_to_class(type)
       case type
       when 'ABExperiment' ; ABExperiment
@@ -273,18 +276,15 @@ module Experimoto
     end
     
     def user_experiment(user, experiment_name, opts = {})
+      experiment = nil
       @mutex.synchronize do
-        _user_experiment(user, experiment_name, opts)
+        experiment = @experiments[experiment_name]
       end
-    end
-    
-    def _user_experiment(user, experiment_name, opts = {})
-      experiment = @experiments[experiment_name]
       return opts[:default] if experiment.nil?
       cached = false
       
       if experiment.is_view?
-        output = _user_experiment(user, experiment.target_experiment_name, opts)
+        output = user_experiment(user, experiment.target_experiment_name, opts)
         if experiment.json_lookup_index
           output = JSON.parse(output)[experiment.json_lookup_index]
         end
@@ -316,50 +316,43 @@ module Experimoto
     end
     
     def user_db_grouping!(uid, eid, group_name)
+      handle = dbh
       date = DateTime.now.to_s
-      dbh.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
+      handle.prepare('insert into groupings (uid, eid, group_name, created_at, modified_at) values (?,?,?,?,?)') do |sth|
         sth.execute(uid, eid, group_name, date, date)
       end
-      dbh.prepare('update users set modified_at = ? where id = ? and modified_at < ?') do |sth|
+      handle.prepare('update users set modified_at = ? where id = ? and modified_at < ?') do |sth|
         sth.execute(date, uid, date)
       end
+      EventStats.add_event_stat(handle, eid, group_name, '', 'play_count', 1)
     end
     
     def user_experiment_event(user, experiment_name, key, value=1)
-      @mutex.synchronize do
-        _user_experiment_event(user, experiment_name, key, value)
-      end
-    end
-    def _user_experiment_event(user, experiment_name, key, value=1)
-      experiment = @experiments[experiment_name]
-      return if experiment.nil?
-      if experiment.is_view?
-        # giant warning: if multiple views point to the same
-        # experiment, calling user_experiment_event on it will cause
-        # duplicates.
-        return _user_experiment_event(user, experiment.target_experiment_name, key, value)
-      end
+      return if user.tester?
       
-      group_name = _user_experiment(user, experiment_name)
-      unless user.tester?
-        dbh.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
-          sth.execute(user.id, experiment.id, group_name, key, value,
-                      DateTime.now.to_s, DateTime.now.to_s)
-        end
+      group_name = user_experiment(user, experiment_name)
+      
+      experiment = nil
+      @mutex.synchronize do
+        experiment = @experiments[experiment_name]
+        return if experiment.nil? || !experiment.track?
         experiment.local_event(:user => user, :group_name => group_name,
                                :key => key, :value => value)
       end
+      
+      handle = dbh
+      handle.prepare('insert into events (uid, eid, group_name, key, value, created_at, modified_at) values (?,?,?,?,?,?,?)') do |sth|
+        sth.execute(user.id, experiment.id, group_name, key, value,
+                    DateTime.now.to_s, DateTime.now.to_s)
+      end
+      EventStats.add_event_stat(handle, experiment.id, group_name, key, 'value_sum', value)
+      EventStats.add_event_stat(handle, experiment.id, group_name, key, 'value_squared_sum', value * value)
     end
     
     # trying to emulate vanity's track! function
     def track(user, key, value=1)
-      @mutex.synchronize do
-        user.groups.keys.each do |experiment_name|
-          experiment = @experiments[experiment_name]
-          next if experiment.nil?
-          next unless experiment.track?
-          _user_experiment_event(user, experiment_name, key, value)
-        end
+      user.groups.keys.each do |experiment_name|
+        user_experiment_event(user, experiment_name, key, value)
       end
     end
     
